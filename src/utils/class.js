@@ -582,8 +582,7 @@ class User {
 	bindMemberCard(mobile, code, formId) {
 		if (!verify('tel', mobile)) return Promise.reject("手机号不正确");
 		if (!code) return Promise.reject("验证码为空");
-		var userInfo = uni.getStorageSync("userInfo"),
-			memberInfo = store.getters['loginInfo/memberInfo'];
+		var userInfo = uni.getStorageSync("userInfo");
 
 		// //更新会员头像和昵称
 		this.updataMemberInfo(userInfo.nickName, userInfo.avatarUrl).then(res => {
@@ -606,25 +605,20 @@ class User {
 			if (res.succeed && res.values) {
 				uni.removeStorageSync("userInfo"); //移除用户微信头像，名称信息
 				//更新本地会员信息
+				let memberInfo = store.getters['loginInfo/memberInfo'];
 				for (let key in memberInfo) {
 					res.values[key] && (memberInfo[key] = res.values[key])
 				}
 
-				// store.dispatch('loginInfo/setMemberInfo', memberInfo);
+				store.dispatch('loginInfo/setMemberInfo', memberInfo);
 				//更新access_token信息
 				_setKey(res.values.access_token);
-				return this.getMemberCardInfo()
+				this.getMemberCardInfo();
+				return memberInfo;
 			} else {
 				console.error(res);
 				return Promise.reject(res.errmsg);
 			}
-		}).then(res => {
-			//更新本地登录数据（会员数据）
-			Object.keys(res).forEach(item => {
-				memberInfo[item] = res[item];
-			});
-			// store.dispatch('loginInfo/setMemberInfo', memberInfo);
-			return memberInfo;
 		})
 	}
 0
@@ -636,15 +630,14 @@ class User {
 		encryptedData,
 		form_id
 	}) {
-		var userInfo = uni.getStorageSync("userInfo"),
-			memberInfo = store.getters['loginInfo/memberInfo'];
+		var userInfo = uni.getStorageSync("userInfo");
+			
 		// //更新会员头像和昵称
 		this.updataMemberInfo(userInfo.nickName, userInfo.avatarUrl).then(res => {
 			if (!res.succeed) {
 				console.error("更新头像昵称失败", res);
 			}
 		});
-
 		return netRequest.postApi({
 			url: "/wx/UserWeChatPhoneNumberReg",
 			data: {
@@ -659,23 +652,19 @@ class User {
 		}).then(res => {
 			if (res.succeed && res.values) {
 				uni.removeStorageSync("userInfo"); //移除用户微信头像，名称信息
+				let memberInfo = store.getters['loginInfo/memberInfo'];
 				//更新本地会员信息
 				for (let key in memberInfo) {
 					res.values[key] && (memberInfo[key] = res.values[key])
 				}
+				store.dispatch('loginInfo/setMemberInfo', memberInfo);
 				//更新access_token信息
-				_setKey(res.values.access_token)
-				return this.getMemberCardInfo();
+				_setKey(res.values.access_token);
+				this.getMemberCardInfo();
+				return memberInfo;
 			} else {
 				return Promise.reject(res);
 			}
-		}).then(res => {
-			//更新本地登录数据（会员数据）
-			Object.keys(res).forEach(item => {
-				memberInfo[item] = res[item];
-			});
-			// store.dispatch('loginInfo/setMemberInfo', memberInfo);
-			return memberInfo;
 		})
 	}
 
@@ -824,7 +813,9 @@ class User {
 					memberCardInfo.sv_ml_name = values.sv_ml_name;
 					memberCardInfo.sv_mr_cardno = values.sv_mr_cardno;
 				}
+				store.dispatch('loginInfo/setMemberCardInfo',memberCardInfo);
 				return memberCardInfo;
+
 			} else {
 				return Promise.reject(res);
 			}
@@ -839,7 +830,7 @@ class User {
 				sv_nick_name: name,
 				head_url: head_url
 			}
-		}).then(res => res);
+		})
 	}
 	getUiConfig() {
 		return netRequest.getApi({

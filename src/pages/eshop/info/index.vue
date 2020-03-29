@@ -168,9 +168,7 @@ export default {
 					this.navBarHeight = store.getters.navHeight + 128;
 					this.tabBarHeight = store.getters.tabBarHeight;
 					if(this.memberInfo.member_id > 0){
-						user.getMemberCardInfo().then(res=>{
-							this.$store.dispatch('loginInfo/setMemberCardInfo',res);
-						})
+						user.getMemberCardInfo();
 					}
 					
 					is_first_run = false;

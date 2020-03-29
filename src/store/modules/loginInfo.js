@@ -24,7 +24,6 @@ export default {
 		memberCardInfo(state){
 			return state.memberCardInfo;
 		}
-
 	},
 	mutations: {
 		_setMemberInfo(state, data) {
