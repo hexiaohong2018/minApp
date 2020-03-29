@@ -1,0 +1,21 @@
+{
+  "extEnable": true,
+  "extAppid": "wx674f6d0501cbb6f1",
+  "ext": {
+    "name": "extAppinfo",
+    "attr": {
+      "appid": "wx674f6d0501cbb6f1",
+	  
+      "userid": "58139099"
+    }
+  },
+  "extPages": {
+    "pages/index/index": {
+      "navigationBarTitleText": "首页"
+    }
+  },
+  "networkTimeout": {
+    "request": 10000,
+    "downloadFile": 10000
+  }
+}

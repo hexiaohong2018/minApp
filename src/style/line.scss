@@ -1,0 +1,53 @@
+@mixin line {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  transform: scale(.5);
+  transform-origin: 0 0;
+  pointer-events: none;
+  box-sizing: border-box;
+  border: 0px solid #E7E7E7;
+}
+
+.min-border {
+  position: relative;
+  &::after {
+    @include line;
+    border-width: 1px;
+  }
+}
+
+.min-border-left {
+  position: relative;
+  &::after {
+    @include line;
+    border-left-width: 1px;
+  }
+}
+
+.min-border-right {
+  position: relative;
+  &::after {
+    @include line;
+    border-right-width: 1px;
+  }
+}
+
+.min-border-top {
+  position: relative;
+  &::after {
+    @include line;
+    border-top-width: 1px;
+  }
+}
+
+.min-border-bottom {
+  position: relative;
+  &::after {
+    @include line;
+    border-bottom-width: 1px;
+  }
+}

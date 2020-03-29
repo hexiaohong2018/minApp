@@ -1,0 +1,286 @@
+{
+	"tabBar": {
+		"list": [{
+			"pagePath":"pages/index/index"
+		},{
+			"pagePath": "pages/eshop/index"
+		}, {
+			"pagePath": "pages/integral/index"
+		}]
+	},
+	"pages": [{
+		"path":"pages/index/index",
+		"style":{
+			"navigationBarTitleText":"首页"
+		}
+	}, {
+		"path": "pages/eshop/index",
+		"style": {
+			"navigationBarTitleText": "微商城",
+			"navigationStyle": "custom",
+			"disableScroll": true,
+			"app-plus": {
+				"bounce": "none"
+			}
+		}
+	}, {
+		"path": "pages/integral/index",
+		"style": {
+			"enablePullDownRefresh": true,
+			"navigationBarTitleText": "积分商城",
+			"navigationBarBackgroundColor": "#FFFFFF"
+		}
+	}],
+	"subPackages": [{
+			"root": "subpages/common",
+			"name": "common",
+			"pages": [{
+				"path": "addressList/index",
+				"style": {
+					"navigationBarTitleText": "我的收货地址",
+					"disableScroll": true,
+					"navigationBarBackgroundColor":"#FFFFFF"
+				}
+			}, {
+				"path": "addAddress/index",
+				"style": {
+					"navigationBarTitleText": "新增收货地址",
+					"disableScroll": true,
+					"backgroundColor":"#FFFFFF"
+				}
+			}, {
+				"path": "reg/index",
+				"style": {
+					"navigationBarTitleText": "会员绑定"
+				}
+			}]
+		},
+		{
+			"root": "pages/eshop/subpages",
+			"pages": [{
+				"path": "userDisplay/index",
+				"style": {
+					"navigationBarTitleText": "简介"
+				}
+			}, {
+				"path": "todoTime/index",
+				"style": {
+					"navigationBarTitleText": "预约时间"
+				}
+			}, {
+				"path": "productDisplay/index",
+				"style": {
+					"navigationBarTitleText": "项目简介"
+				}
+			}, {
+				"path": "todoPaySuccess/index",
+				"style": {
+					"navigationBarTitleText": "预约详情"
+				}
+			}, {
+				"path": "reservation/index",
+				"style": {
+					"navigationBarTitleText": "我的预约"
+				}
+			}]
+		},
+		{
+			"root": "subpages/integral",
+			"name": "integral",
+			"pages": [{
+				"path": "order/index",
+				"style": {
+					"navigationBarTitleText": "兑换记录",
+					"enablePullDownRefresh": true
+				}
+			}, {
+				"path": "productInfo/index",
+				"style": {
+					"navigationBarTitleText": "商品详情",
+					"navigationStyle": "custom",
+					"backgroundColor": "#FFFFFF"
+				}
+			}, {
+				"path": "discover/index",
+				"style": {
+					"navigationBarTitleText": "可兑换商品",
+					"enablePullDownRefresh": true
+				}
+			}, {
+				"path": "pay/index",
+				"style": {
+					"navigationBarTitleText": "积分商城",
+					"disableScroll": true
+				}
+			}]
+		},
+		{
+			"root": "subpages/subIntegral",
+			"pages": [{
+				"path": "orderInfo/index",
+				"style": {
+					"navigationBarTitleText": "订单详情",
+					"disableScroll": true, // 禁止原生页面滚动, 解决Android小程序下拉卡顿的问题
+					"app-plus": {
+						"bounce": "none" // 取消APP端iOS回弹,避免与下拉刷新冲突,以及bounce边缘1秒卡顿
+					}
+				}
+			}, {
+				"path": "orderSuccess/index",
+				"style": {
+					"navigationBarTitleText": "兑换成功"
+				}
+			}]
+		},
+		{
+			"root": "subpages/eshop",
+			"name": "eshop",
+			"pages": [{
+				"path":"productList/index",
+				"style":{
+					"navigationBarTitleText":"商品列表"
+				}
+			},{
+				"path": "productInfo/index",
+				"style": {
+					"navigationStyle": "custom"
+				}
+			}, {
+				"path": "shoppingcart/index",
+				"style": {
+					"enablePullDownRefresh": true,
+					"navigationBarTitleText": "购物车"
+				}
+			}, {
+				"path": "pay/index",
+				"style": {
+					"navigationBarTitleText": "微商城",
+					"navigationStyle": "custom"
+				}
+			}]
+		}, {
+			"root": "subpages/subEshop",
+			"pages": [{
+				"path": "category/index",
+				"style": {
+					"navigationBarTitleText": "商品分类"
+				}
+			}, {
+				"path": "paySuccess/index",
+				"style": {
+					"navigationBarTitleText": "订单详情",
+					"navigationStyle": "custom",
+					"disableScroll": true, // 禁止原生页面滚动, 解决Android小程序下拉卡顿的问题
+					"app-plus": {
+						"bounce": "none" // 取消APP端iOS回弹,避免与下拉刷新冲突,以及bounce边缘1秒卡顿
+					}
+				}
+			}, {
+				"path": "order/index",
+				"style": {
+					"navigationBarTitleText": "我的订单",
+					"navigationStyle": "custom",
+					"disableScroll": true, // 禁止原生页面滚动, 解决Android小程序下拉卡顿的问题
+					"app-plus": {
+						"bounce": "none" // 取消APP端iOS回弹,避免与下拉刷新冲突,以及bounce边缘1秒卡顿
+					}
+				}
+			}, {
+				"path": "bill/index",
+				"style": {
+					"navigationBarTitleText": "我的账单",
+					"disableScroll": true,
+					"app-plus": {
+						"bounce": "none"
+					}
+				}
+			}, {
+				"path": "recommend/index",
+				"style": {
+					"navigationBarTitleText": "推荐中心",
+					"navigationStyle": "custom",
+					"disableScroll": true,
+					"app-plus": {
+						"bounce": "none"
+					}
+				}
+			}, {
+				"path": "share/index",
+				"style": {
+					"navigationBarTitleText": "分享好友"
+				}
+			}, {
+				"path": "groupBuy/index",
+				"style": {
+					"navigationBarTitleText": "我的拼团"
+				}
+			}, {
+				"path": "seckill/index",
+				"style": {
+					"navigationBarTitleText": "我的秒杀",
+					"disableScroll": true,
+					"app-plus": {
+						"bounce": "none"
+					}
+				}
+			}, {
+				"path": "coupon/index",
+				"style": {
+					"navigationBarTitleText": "优惠券列表",
+					"disableScroll": true,
+					"app-plus": {
+						"bounce": "none"
+					}
+				}
+			}, {
+				"path": "integral/index",
+				"style": {
+					"navigationBarTitleText": "积分明细",
+					"enablePullDownRefresh": true
+				}
+			}, {
+				"path": "receiveCoupon/index",
+				"style": {
+					"navigationBarTitleText": "领取优惠券"
+				}
+			}, {
+				"path": "groupBuyInfo/index",
+				"style": {
+					"navigationBarTitleText": "拼团详情",
+					"navigationStyle": "custom"
+				}
+			}, {
+				"path": "secKillInfo/index",
+				"style": {
+					"navigationBarTitleText": "秒杀详情",
+					"navigationStyle": "custom"
+				}
+			}]
+		}
+	],
+
+	"preloadRule": {
+		"pages/integral/index": {
+			"network": "all",
+			"packages": ["integral"]
+		},
+		"pages/eshop/index": {
+			"network": "all",
+			"packages": ["eshop"]
+		}
+	},
+
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "首页",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#F8F8F8"
+	},
+	"condition": {
+		"current":0,
+		"list":[{
+			"name":"商品分类",
+			"path":"subpages/subEshop/category/index"
+		}]
+	}
+}
