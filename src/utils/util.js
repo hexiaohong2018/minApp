@@ -172,10 +172,11 @@ const mobileNumber = (value) => {
 /**
  * 消息提示total
  */
-const showToastFn = (title, icon = "none") => {
+const showToastFn = (title, icon = "none",mask=true) => {
 	let msg = {
 		title,
-		icon
+		icon,
+		mask
 	}
 	if (icon != "none" && icon != "loading") {
 		msg.image = icon == "success" ? "/static/succeed.png" : "/static/error.png"

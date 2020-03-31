@@ -46,8 +46,8 @@ function _formatSlideShow(images) {
 	images = isNull(images) ? [] :
 		(type(images) == 'array' ? images : JSON.parse(images)).filter(item => item.code);
 	return images.length == 0 ? [{
-		img: def_img
-	}] :
+			img: def_img
+		}] :
 		images.map(item => ({
 			img: imgUrl + item.code
 		}));
@@ -170,14 +170,14 @@ class NetRequest {
 					'content-type': 'application/x-www-form-urlencoded'
 				},
 				method: 'POST',
-				success: function (res) {
+				success: function(res) {
 					if (res.statusCode == 200) {
 						resolve(res.data)
 					} else {
 						reject(res);
 					}
 				},
-				fail: function (res) {
+				fail: function(res) {
 					reject(res);
 				},
 			})
@@ -280,10 +280,10 @@ class Order {
 	 * 获取线下订单
 	 * _page 获取订单的第几页，如果不给值，每调用一次页数自增1，从第一页开始
 	 */
-	offlineOrder = (function () {
+	offlineOrder = (function() {
 		let page = 1,
 			pageSize = 10;
-		return function (_page) {
+		return function(_page) {
 			_page && (page = _page);
 			return netRequest.getApi({
 				url: "/wx/GetOffLineorderListPageList",
@@ -295,9 +295,9 @@ class Order {
 			}).then(res => {
 				if (res.succeed && res.values) {
 					let list = (res.values.orderList || []).map(item => {
-						item.order_datetime = formatTime(new Date(item.order_datetime));
-						return item;
-					}),
+							item.order_datetime = formatTime(new Date(item.order_datetime));
+							return item;
+						}),
 						state = (list.length == 0 && page == 1) ? 3 : list.length < pageSize ? 2 : 1;
 					page++;
 					return {
@@ -316,10 +316,10 @@ class Order {
 	 *  pagepaymentStatus,//-1全部订单, 0待付款, 1已付款
 	 *  sv_delivery_status//-1全部，0等待配送，1配送中，2已完成
 	 */
-	onlineOrder = (function () {
+	onlineOrder = (function() {
 		let page = 1,
 			pageSize = 10;
-		return function (_page, paymentStatus, sv_delivery_status) {
+		return function(_page, paymentStatus, sv_delivery_status) {
 			_page && (page = _page)
 			return netRequest.getApi({
 				url: "/wx/GetCateringOrderProductPageList",
@@ -333,11 +333,11 @@ class Order {
 			}).then(res => {
 				if (res.succeed && res.values) {
 					let list = res.values.map(item => {
-						item.order_product_json_str = JSON.parse(item.order_product_json_str);
-						item.wt_datetime = formatTime(new Date(item.wt_datetime));
-						item.sv_deliver_goods_time = formatTime(new Date(item.sv_deliver_goods_time));
-						return item;
-					}),
+							item.order_product_json_str = JSON.parse(item.order_product_json_str);
+							item.wt_datetime = formatTime(new Date(item.wt_datetime));
+							item.sv_deliver_goods_time = formatTime(new Date(item.sv_deliver_goods_time));
+							return item;
+						}),
 						state = (list.length == 0 && page == 1) ? 3 : list.length < 10 ? 2 : 1 //3没有数据，2加载完毕，1还有数据
 					page++;
 					return {
@@ -621,7 +621,7 @@ class User {
 			}
 		})
 	}
-0
+	0
 	/**
 	 * 微信号快速注册会员
 	 */
@@ -631,7 +631,7 @@ class User {
 		form_id
 	}) {
 		var userInfo = uni.getStorageSync("userInfo");
-			
+
 		// //更新会员头像和昵称
 		this.updataMemberInfo(userInfo.nickName, userInfo.avatarUrl).then(res => {
 			if (!res.succeed) {
@@ -699,100 +699,99 @@ class User {
 							recommend_member_id,
 							sales_user_id
 						}
-					}).then(res => {
-						if (res.succeed && res.values && res.result) {
-							let data = res.values,
-								result = res.result,
-								access_token = data.access_token,
-								wxAppExtrUIElements = {},
-								loginInfo = {};
-							result.wxAppExtrUIElements && result.wxAppExtrUIElements.map(item => {
-								wxAppExtrUIElements[item.elementCode] = item.enabled;
-							});
-							loginInfo = {
-								memberInfo: {
-									member_id: Number(data.member_id), //会员id
-									sv_mw_availableamount: data.sv_mw_availableamount, //会员金额
-									sv_headimgurl: data.sv_headimgurl, //会员头像
-									sv_nick_name: data.sv_nick_name //会员名称
-								},
-								shopInfo: {
-									storePhoneNumber: result.shopInfo.sv_us_phone, //商家电话
-									shop_name: result.shopInfo.sv_us_name, //店铺名称
-									user_id: result.shopInfo.user_id, //店铺ID
-									shop_address: result.shopInfo.address, //店铺地址
-									sv_us_coordinate: result.shopInfo.sv_us_coordinate ? JSON.parse(result.shopInfo.sv_us_coordinate) : null, //获取商铺位置信息
-									sv_us_range: result.shopInfo.sv_us_range ? result.shopInfo.sv_us_range : 5, //配送距离,默认5公里
-									dis_lbs: result.dis_lbs, //是否使用定位
-									takeOutFoodPay: result.takeOutFoodPay, //外卖支付方式
-									shopPay: result.shopPay, //店付方式
-									enableDoBusiness: result.returnEnableDoBusiness, //是否营业
-									sv_shop_notice: result.shopInfo.sv_shop_notice, //店铺公告
-									sv_us_logo: result.shopInfo.sv_us_logo ? imgUrl + result.shopInfo.sv_us_logo : "",
-									wxAppExtrUIElements: wxAppExtrUIElements,
-									shopList: (!result.shopList || result.shopList.length == 0) ? null : result.shopList.map(shop => {
-										shop.sv_us_coordinate = JSON.parse(shop.sv_us_coordinate)
-										return shop;
-									}),
-									businessDate: {
-										beginDate: result.beginDate,
-										centerDate: result.centerDate,
-										nightDate: result.nightDate
-									},
-
-									//默认广告图片
-									sv_advertising_picture: (JSON.parse(result.shopInfo.sv_advertising_picture) || []).filter(item => item.code)
-										.map(item => {
-											item.code = item.code ? imgUrl + item.code : "";
-											return item;
-										}),
-
-									freight: { //运费信息
-										sv_delivery_rise: result.sv_delivery_rise,
-										sv_money_satisfy: result.sv_money_satisfy,
-										sv_move_freight: result.sv_move_freight
-									},
-									//店铺自定义装修信息
-
-									wxapp_uiconfig: classifyModule(result.wxapp_uiconfig && JSON.parse(result.wxapp_uiconfig).map(
-										item => {
-											item.subModule = item.subModule && item.subModule.map(item => {
-												item.img = item.img && imgUrl + item.img;
-												return item;
-											})
-											return item;
-										})),
-									WIFI: {
-										name: result.wiFiName,
-										pwd: result.wiFiPwd
-									},
-									zeroInventorySales: result.zeroInventorySales,
-									sales_user_id,
-								},
-								distributorInfo: {
-									name: result.distributor_name
-								},
-
-								// distributor_name: result.distributor_name
-							}
-							//更新access_token信息
-							_setKey(access_token);
-							//更新登录信息
-							store.dispatch('loginInfo/setLogin', loginInfo);
-							// 假设登录态保持1天
-							let expiredTime = +new Date() + 1 * 24 * 60 * 60 * 1000;
-							store.dispatch('loginInfo/setExpiredTime', expiredTime);
-							return loginInfo;
-						} else {
-							return Promise.reject(res);
-						}
 					})
 				} else {
 					return Promise.reject(res);
 				}
-			});
+			}).then(res => {
+				if (res.succeed && res.values && res.result) {
+					let data = res.values,
+						result = res.result,
+						access_token = data.access_token,
+						wxAppExtrUIElements = {},
+						loginInfo = {};
+					result.wxAppExtrUIElements && result.wxAppExtrUIElements.map(item => {
+						wxAppExtrUIElements[item.elementCode] = item.enabled;
+					});
+					loginInfo = {
+						memberInfo: {
+							member_id: Number(data.member_id), //会员id
+							sv_mw_availableamount: data.sv_mw_availableamount, //会员金额
+							sv_headimgurl: data.sv_headimgurl, //会员头像
+							sv_nick_name: data.sv_nick_name //会员名称
+						},
+						shopInfo: {
+							storePhoneNumber: result.shopInfo.sv_us_phone, //商家电话
+							shop_name: result.shopInfo.sv_us_name, //店铺名称
+							user_id: result.shopInfo.user_id, //店铺ID
+							shop_address: result.shopInfo.address, //店铺地址
+							sv_us_coordinate: result.shopInfo.sv_us_coordinate ? JSON.parse(result.shopInfo.sv_us_coordinate) : null, //获取商铺位置信息
+							sv_us_range: result.shopInfo.sv_us_range ? result.shopInfo.sv_us_range : 5, //配送距离,默认5公里
+							dis_lbs: result.dis_lbs, //是否使用定位
+							takeOutFoodPay: result.takeOutFoodPay, //外卖支付方式
+							shopPay: result.shopPay, //店付方式
+							enableDoBusiness: result.returnEnableDoBusiness, //是否营业
+							sv_shop_notice: result.shopInfo.sv_shop_notice, //店铺公告
+							sv_us_logo: result.shopInfo.sv_us_logo ? imgUrl + result.shopInfo.sv_us_logo : "",
+							wxAppExtrUIElements: wxAppExtrUIElements,
+							shopList: (!result.shopList || result.shopList.length == 0) ? null : result.shopList.map(shop => {
+								shop.sv_us_coordinate = JSON.parse(shop.sv_us_coordinate)
+								return shop;
+							}),
+							businessDate: {
+								beginDate: result.beginDate,
+								centerDate: result.centerDate,
+								nightDate: result.nightDate
+							},
+
+							//默认广告图片
+							sv_advertising_picture: (JSON.parse(result.shopInfo.sv_advertising_picture) || []).filter(item => item.code)
+								.map(item => {
+									item.code = item.code ? imgUrl + item.code : "";
+									return item;
+								}),
+
+							freight: { //运费信息
+								sv_delivery_rise: result.sv_delivery_rise,
+								sv_money_satisfy: result.sv_money_satisfy,
+								sv_move_freight: result.sv_move_freight
+							},
+							//店铺自定义装修信息(旧版本数据)
+							// wxapp_uiconfig: classifyModule(result.wxapp_uiconfig && JSON.parse(result.wxapp_uiconfig).map(
+							// 	item => {
+							// 		item.subModule = item.subModule && item.subModule.map(item => {
+							// 			item.img = item.img && imgUrl + item.img;
+							// 			return item;
+							// 		})
+							// 		return item;
+							// 	})),
+							WIFI: {
+								name: result.wiFiName,
+								pwd: result.wiFiPwd
+							},
+							zeroInventorySales: result.zeroInventorySales,
+							sales_user_id,
+							cantopup:result.cantopup,
+							usingid:result.usingid,
+						},
+						distributorInfo: {
+							name: result.distributor_name
+						},
+					}
+					//更新access_token信息
+					_setKey(access_token);
+					//更新登录信息
+					store.dispatch('loginInfo/setLogin', loginInfo);
+					// 假设登录态保持1天
+					let expiredTime = +new Date() + 1 * 24 * 60 * 60 * 1000;
+					store.dispatch('loginInfo/setExpiredTime', expiredTime);
+					return loginInfo;
+				} else {
+					return Promise.reject(res);
+				}
+			})
 		} else {
-			return Promise.resolve(store.getters['loginInfo']);
+			return Promise.resolve(store.getters['loginInfo/login']);
 		}
 	}
 
@@ -809,13 +808,14 @@ class User {
 					values = res.values;
 				if (values) {
 					memberCardInfo.sv_ml_commondiscount = (+values.sv_ml_commondiscount);
+					memberCardInfo.sv_mw_availableamount = (+values.sv_mw_availableamount);
 					memberCardInfo.sv_mw_availablepoint = (+values.sv_mw_availablepoint);
+					memberCardInfo.member_id = values.member_id;
 					memberCardInfo.sv_ml_name = values.sv_ml_name;
 					memberCardInfo.sv_mr_cardno = values.sv_mr_cardno;
 				}
-				store.dispatch('loginInfo/setMemberCardInfo',memberCardInfo);
+				store.dispatch('loginInfo/setMemberCardInfo', memberCardInfo);
 				return memberCardInfo;
-
 			} else {
 				return Promise.reject(res);
 			}
@@ -1323,9 +1323,9 @@ class Pay {
 	weChatTopUp(model) {
 		model.key = _getKey();
 		return netRequest.postApi({
-			url: "/Wx/WxAppWeiXinPayTopUp",
-			data: model
-		})
+				url: "/Wx/WxAppWeiXinPayTopUp",
+				data: model
+			})
 			.then(res => {
 				if (res && res.prepay_id) {
 					return promiseAPI(uni.requestPayment, {
@@ -1420,13 +1420,6 @@ class ProductList {
 			ProductList.single = this;
 		}
 		return ProductList.single;
-		// this.result = {}; //获取到商品的信息
-		// this.searchStr = ""; //搜索关键字
-		// this.categoryId = "0" //当前商品类别，默认值0，表示所有类别,
-		// this.subCategoryId = "0" //子类ID
-		// this.pageIndex = 1; //商品分页显示，当前页数
-		// this.pageSize = 10; //单次从数据库获取商品的数量
-		// this.isRecommend = false; //是否读取推荐商品
 	}
 
 	_getProductList({
@@ -1604,8 +1597,8 @@ class ProductList {
 		tips加载过程中，loading文本
 		isRecommend是否读取推荐商品
 	 */
-	getProductPageList = (function (_page = 1) {
-		return function ({
+	getProductPageList = (function(_page = 1) {
+		return function({
 			page,
 			size = 10,
 			tips = "",
@@ -1627,8 +1620,8 @@ class ProductList {
 
 
 	//根据分类ID获取商品
-	getProductListByCategoryId = (function (_page = 1) {
-		return function ({
+	getProductListByCategoryId = (function(_page = 1) {
+		return function({
 			category,
 			page,
 			subCategory = 0,
@@ -1708,11 +1701,11 @@ class Address {
 		def
 	} = {}) {
 		return netRequest.getApi({
-			url: "/wx/GetReceiptAddressListByMemberId",
-			data: {
-				key: _getKey()
-			}
-		})
+				url: "/wx/GetReceiptAddressListByMemberId",
+				data: {
+					key: _getKey()
+				}
+			})
 			.then(res => {
 				if (res.succeed && res.values) {
 					let values = res.values.map(item => {
@@ -1737,12 +1730,12 @@ class Address {
 	}
 	delAddress(receiptId) {
 		return netRequest.postApi({
-			url: "/Wx/DeleteReceiptAddressByReceiptId",
-			data: {
-				key: _getKey(),
-				receiptId
-			}
-		})
+				url: "/Wx/DeleteReceiptAddressByReceiptId",
+				data: {
+					key: _getKey(),
+					receiptId
+				}
+			})
 			.then(res => {
 				if (res.succeed) {
 					return res;
@@ -1753,12 +1746,12 @@ class Address {
 	}
 	setDefAddress(receiptId) {
 		return netRequest.postApi({
-			url: "/Wx/SetDefaultReceiptAddressByReceiptId",
-			data: {
-				key: _getKey(),
-				receiptId
-			}
-		})
+				url: "/Wx/SetDefaultReceiptAddressByReceiptId",
+				data: {
+					key: _getKey(),
+					receiptId
+				}
+			})
 			.then(res => {
 				if (res.succeed) {
 					return res;
@@ -1815,10 +1808,10 @@ class Address {
 			};
 			coordinate && (params.sv_receipt_mlanlat = coordinate) //经纬度存在，则保存
 			return netRequest.postApi({
-				url: "/wx/AddDefaultAddressInfo",
-				data: params,
-				tips: "保存中"
-			})
+					url: "/wx/AddDefaultAddressInfo",
+					data: params,
+					tips: "保存中"
+				})
 				.then(res => {
 					if (res.succeed) {
 						return res.values;
@@ -1842,27 +1835,27 @@ class Address {
 		let successCallBack = success,
 			failCallBack = fail;
 		wxFn({
-			success: function (res) {
+			success: function(res) {
 				successCallBack(res);
 			},
-			fail: function () {
+			fail: function() {
 				uni.getSetting({
-					success: function (res) {
+					success: function(res) {
 						let statu = res.authSetting;
 						if (!statu[`scope.${scopeName}`]) {
 							uni.showModal({
 								title: '设置权限',
 								content: content,
-								success: function (tip) {
+								success: function(tip) {
 									if (tip.confirm) {
 										uni.openSetting({
-											success: function (data) {
+											success: function(data) {
 												if (data.authSetting[`scope.${scopeName}`] === true) {
 													showToastFn("授权成功")
 													//授权成功之后，再调用wxFn
 													wxFn({
 														type: 'wgs84',
-														success: function (res) {
+														success: function(res) {
 															successCallBack(res);
 														},
 													})
@@ -1877,7 +1870,7 @@ class Address {
 							})
 						}
 					},
-					fail: function (res) {
+					fail: function(res) {
 						showToastFn("调用授权窗口失败", "fail")
 						failCallBack && failCallBack(res)
 					}
@@ -1888,7 +1881,7 @@ class Address {
 }
 let activityCommon = {
 	//购买状态buystate：0：单独购买；1：一键开团，参团；2.秒杀
-	getShoppingCartList: function (product_id, product_num, sv_assemble_config_id, buystate) {
+	getShoppingCartList: function(product_id, product_num, sv_assemble_config_id, buystate) {
 		return netRequest.getApi({
 			url: "/wx/GetFastShoppingCartListByShopUserId",
 			data: {
@@ -2103,8 +2096,8 @@ class Seckill {
 	}
 	//获取秒杀商品
 	//state 活动状态(0: 未开始; 1: 已开始;)
-	getProductList = (function (page = 1) {
-		return function ({
+	getProductList = (function(page = 1) {
+		return function({
 			state,
 			page,
 			size = 10
@@ -2270,7 +2263,7 @@ class Bill {
 	_getCommission_Or_Integral_Record(type) {
 		let page = 1,
 			pageSize = 10;
-		return function (_page, _pageSize) {
+		return function(_page, _pageSize) {
 			_page && (page = _page);
 			_pageSize && (pageSize = _pageSize);
 			return netRequest.postApi({
@@ -2309,10 +2302,10 @@ class Bill {
 	}
 
 	// 获取消费记录  _page查询第几页
-	getConsumptionRecord = (function () {
+	getConsumptionRecord = (function() {
 		let page = 1,
 			pageSize = 10;
-		return function (_page) {
+		return function(_page) {
 			_page && (page = _page);
 			return netRequest.getApi({
 				url: "/Wx/GetCardBillList",
@@ -2348,10 +2341,10 @@ class Bill {
 	}())
 
 	//获取充值记录 _page查询第几页
-	getTopUpRecord = (function () {
+	getTopUpRecord = (function() {
 		let page = 1,
 			pageSize = 10;
-		return function (_page) {
+		return function(_page) {
 			_page && (page = _page);
 			return netRequest.getApi({
 				url: "/Wx/GetCardSavingsList",
@@ -2400,10 +2393,10 @@ class Integral {
 		return Integral.single;
 	}
 	//获取可兑换商品列表
-	getProductList = (function () {
+	getProductList = (function() {
 		var page = 1,
 			pagesize = 10;
-		return function (_page, _pagesize) {
+		return function(_page, _pagesize) {
 			page = _page || page;
 			pagesize = _pagesize || pagesize;
 			return netRequest.getApi({
@@ -2455,10 +2448,10 @@ class Integral {
 		})
 	}
 	//获取已兑换商品列表
-	getOrderList = (function () {
+	getOrderList = (function() {
 		var page = 1,
 			pagesize = 10;
-		return function (_page, _pagesize) {
+		return function(_page, _pagesize) {
 			page = _page || page;
 			pagesize = _pagesize || pagesize
 			return netRequest.getApi({
@@ -2567,8 +2560,8 @@ class BookService {
 		return BookService.single
 	}
 	//获取预约项目列表
-	getServices = (function (_pageIndex = 1) {
-		return function ({
+	getServices = (function(_pageIndex = 1) {
+		return function({
 			pageIndex,
 			pageSize = 10
 		} = {}) {
@@ -2598,8 +2591,8 @@ class BookService {
 	}())
 	//获取技师列表
 	//sp_grouping_id 岗位ID
-	getEmployees = (function (_pageIndex = 1) {
-		return function ({
+	getEmployees = (function(_pageIndex = 1) {
+		return function({
 			pageIndex,
 			pageSize = 10,
 			sp_grouping_id = 0
@@ -2632,8 +2625,8 @@ class BookService {
 
 	//获取我的预约
 	//state 预约状态：1 申请，2 接受【预约成功】，3 待确认【预约内容被修改，等待客户确认】，4 爽约【客户爽约】，5 完成，6 下单，-2 拒绝【预约失败】，-3 取消
-	getMyServices = (function (_pageIndex = 1) {
-		return function ({
+	getMyServices = (function(_pageIndex = 1) {
+		return function({
 			pageIndex,
 			pageSize = 10,
 			state
@@ -2683,8 +2676,8 @@ class BookService {
 		})
 	}
 	//根据技师获取项目
-	getServicesByEmployee = (function (_pageIndex = 1) {
-		return function ({
+	getServicesByEmployee = (function(_pageIndex = 1) {
+		return function({
 			pageIndex,
 			pageSize = 10,
 			technician_id

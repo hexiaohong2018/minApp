@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import { phoneInfo } from '../../utils/util.js';
 export default {
 	props: {
 		border: {
@@ -24,9 +23,9 @@ export default {
 		};
 	},
 	created() {
-		phoneInfo().then(res => {
-			this.iphoneX = res.isIphoneX;
-		});
+		
+		
+			this.iphoneX = this.$store.getters['systemInfo/systemInfo'].isIphoneX;
 	}
 };
 </script>

@@ -9,7 +9,8 @@
 		<view class="btn" :style="{ background: disabled ? ' #a9a3a3' : _color }">
 			<view class="price">
 				<text v-if="coupon.sv_coupon_type == 0">¥</text>
-				{{ coupon.sv_coupon_type == 0 ? coupon.sv_coupon_money : coupon.sv_coupon_money / 10 }}
+				<!-- {{ coupon.sv_coupon_type == 0 ? coupon.sv_coupon_money : coupon.sv_coupon_money / 10 }} -->
+				{{ coupon.sv_coupon_money }}
 				<text v-if="coupon.sv_coupon_type == 1">折</text>
 			</view>
 			<view class="get" v-if="recived">立刻领取</view>

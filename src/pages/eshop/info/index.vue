@@ -24,12 +24,12 @@
 				</div>
 			</div>
 			<ul class="fortune">
-				<li>
-					<div class="value">{{ memberInfo.sv_mw_availableamount || 0 }}</div>
+				<li @click="topUp">
+					<div class="value">{{ memberCardInfo.sv_mw_availableamount || 0 }}</div>
 					<div class="text">余额</div>
 				</li>
 				<li @click="checkIntegral">
-					<div class="value">{{ memberInfo.sv_mw_availablepoint || 0 }}</div>
+					<div class="value">{{ memberCardInfo.sv_mw_availablepoint || 0 }}</div>
 					<div class="text">积分</div>
 				</li>
 				<li @click="checkCoupon">
@@ -129,16 +129,15 @@
 					<view class="text">客服帮助</view>
 				</view>
 			</div>
-			<view class="foot">
+			<view class="foot" v-if="distributorInfo.name">
 				<view v-if="false" class="img" :style="{ backgroundImage: 'url(/static/shoplogo.png)' }"></view>
-				<view class="des">—— 由德客软件提供技术支持 ——</view>
+				<view class="des">-- {{ distributorInfo.name }} --</view>
 			</view>
 		</mescroll-uni>
 	</div>
 </template>
 
 <script>
-import store from '../../../utils/store.js';
 import { User, Coupon, Bill, Order } from '../../../utils/class.js';
 import { isDeepColor, showToastFn } from '../../../utils/util.js';
 import { mapGetters } from 'vuex';
@@ -165,12 +164,8 @@ export default {
 			var is_first_run = true;
 			return function() {
 				if (is_first_run) {
-					this.navBarHeight = store.getters.navHeight + 128;
-					this.tabBarHeight = store.getters.tabBarHeight;
-					if(this.memberInfo.member_id > 0){
-						user.getMemberCardInfo();
-					}
-					
+					this.navBarHeight = this.$store.getters['systemInfo/systemInfo'].navHeight + 128;
+					this.tabBarHeight = this.$store.getters['systemInfo/systemInfo'].tabBarHeight;
 					is_first_run = false;
 				}
 			};
@@ -182,7 +177,8 @@ export default {
 		},
 		...mapGetters({
 			memberInfo: 'loginInfo/memberInfo',
-			memberCardInfo:'loginInfo/memberCardInfo'
+			memberCardInfo: 'loginInfo/memberCardInfo',
+			distributorInfo: 'loginInfo/distributorInfo'
 		})
 	},
 	watch: {
@@ -192,6 +188,16 @@ export default {
 		}
 	},
 	methods: {
+		topUp() {
+			let shopInfo = this.$store.getters['loginInfo/shopInfo'],
+				extConfig = uni.getExtConfigSync ? uni.getExtConfigSync() : {}, //读取ext.json文件信息
+				auditid = extConfig && extConfig.attr && extConfig.attr.auditid;
+			if (shopInfo.cantopup || shopInfo.usingid >= auditid) {
+				uni.navigateTo({
+					url: '../../subpages/subEshop/recharge/index'
+				});
+			}
+		},
 		downCallback(mescroll) {
 			uni.removeStorageSync('expiredTime');
 			this.$parent.getUiConfig();
@@ -205,7 +211,7 @@ export default {
 				});
 		},
 		init() {
-			return Promise.all([order.getOrderCount(), coupon.getCouponList(0)]).then(values => {
+			return Promise.all([order.getOrderCount(), coupon.getCouponList(0), user.getMemberCardInfo()]).then(values => {
 				var [orderCount, couponList] = values;
 				this.orderCount = orderCount;
 				this.couponConts = couponList.length;
@@ -269,12 +275,12 @@ export default {
 					})
 					.catch(msg => {
 						uni.navigateTo({
-							url: '../../subPages/vipCard/index'
+							url: '../../subpages/subEshop/vipCard/index'
 						});
 					});
 			} else {
 				uni.navigateTo({
-					url: '../../subPages/vipCard/index'
+					url: '../../subpages/subEshop/vipCard/index'
 				});
 			}
 		},

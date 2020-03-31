@@ -155,7 +155,12 @@
 				"path": "pay/index",
 				"style": {
 					"navigationBarTitleText": "微商城",
-					"navigationStyle": "custom"
+          "navigationStyle": "custom"
+				}
+			},{
+				"path":"shops/index",
+				"style":{
+					"navigationBarTitleText":"选择分店"
 				}
 			}]
 		}, {
@@ -255,7 +260,17 @@
 					"navigationBarTitleText": "秒杀详情",
 					"navigationStyle": "custom"
 				}
-			}]
+			},{
+        "path":"recharge/index",
+        "style":{
+          "navigationBarTitleText":"充值"
+        }
+      },{
+		  "path":"vipCard/index",
+		  "style":{
+			  "navigationBarTitleText":"会员卡"
+		  }
+	  }]
 		}
 	],
 
@@ -277,10 +292,23 @@
 		"backgroundColor": "#F8F8F8"
 	},
 	"condition": {
-		"current":0,
+		"current":2,
 		"list":[{
 			"name":"商品分类",
 			"path":"subpages/subEshop/category/index"
+		},{
+			"name":"分店",
+			"path":"subpages/eshop/shops/index"
+		},{
+			"name":"充值",
+			"path":"subpages/subEshop/recharge/index"
+		},{
+			"name":"电子会员卡",
+			"path":"subpages/subEshop/vipCard/index"
+		},{
+			"name":"邀请有礼",
+			"path":"pages/eshop/index",
+			"query":"rid=581390994609710"
 		}]
 	}
 }

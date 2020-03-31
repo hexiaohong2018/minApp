@@ -60,7 +60,6 @@
 import dcTabs from '../../../components/tabs/index.vue';
 import { BookService } from '../../../utils/class';
 import { setActiveColor } from '../../../utils/util';
-import store from '../../../utils/store.js';
 import { mapMutations, mapGetters } from 'vuex';
 const bookService = new BookService();
 export default {
@@ -109,8 +108,8 @@ export default {
 			var is_first_run = true;
 			return function() {
 				if (is_first_run) {
-					this.navHeight = store.getters.navHeight + 52;
-					this.tabBarHeight = store.getters.tabBarHeight;
+					this.navHeight = this.$store.getters['systemInfo/systemInfo'].navHeight + 52;
+					this.tabBarHeight = this.$store.getters['systemInfo/systemInfo'].tabBarHeight;
 					this.employeeMescroll.resetUpScroll();
 					is_first_run = false;
 				}

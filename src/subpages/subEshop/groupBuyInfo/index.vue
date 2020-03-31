@@ -141,7 +141,7 @@ export default {
 	onLoad: function(options) {
 		var params = decodeWXCodeParams(options);
 		this.activeColor = store.getters.navColor;
-		this.menuHeight = store.getters.navHeight;
+		this.menuHeight = this.$store.getters['systemInfo/systemInfo'].navHeight;
 		
 		this.debounce = debounce((e)=>{
 			if (e.scrollTop > this.menuHeight) {

@@ -16,7 +16,7 @@
 					<p>分享</p>
 				</div>
 			</div>
-			<span class="remain">{{ `剩余${product.sv_p_storage >= 0 ? product.sv_p_storage : 0}件` }}</span>
+			<span v-if="!shopInfo.zeroInventorySales" class="remain">{{ `剩余${product.sv_p_storage >= 0 ? product.sv_p_storage : 0}件` }}</span>
 		</div>
 		<div class="info">
 			<div class="title">商品详情</div>
@@ -85,7 +85,7 @@ export default {
 	},
 	onLoad(options) {
 		this.activeColor = store.getters.navColor;
-		this.menuHeight = store.getters.navHeight;
+		this.menuHeight = this.$store.getters['systemInfo/systemInfo'].navHeight;
 		this.debounce = debounce(
 			e => {
 				if (e.scrollTop > this.menuHeight) {
@@ -122,7 +122,8 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			num: 'cartList/num'
+			num: 'cartList/num',
+			shopInfo: 'loginInfo/shopInfo'
 		})
 	},
 	methods: {

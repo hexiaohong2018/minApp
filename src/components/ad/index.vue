@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import { phoneInfo } from '../../utils/util.js';
 export default {
 	data() {
 		return {
@@ -42,9 +41,7 @@ export default {
 	created: function() {
 		this.imageCount = 0; //临时变量
 		this.tempHeight = 0; //临时变量
-		phoneInfo().then(res => {
-			this.phone_width = res.screenWidth; //临时变量
-		});
+		this.phone_width=this.$store.getters['systemInfo/systemInfo'].screenWidth;
 	},
 	methods: {
 		onbindTab: function(e) {

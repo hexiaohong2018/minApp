@@ -35,7 +35,6 @@
 import poster from '@/components/poster/index.vue';
 import ad from '@/components/ad/index.vue';
 import navBar from '@/components/navBar/index.vue';
-import store from '../../../utils/store.js';
 import { debounce } from '../../../utils/common.js';
 
 import { showToastFn, decodeWXCodeParams } from '../../../utils/util.js';
@@ -57,7 +56,7 @@ export default {
 		return this.shareInfo;
 	},
 	onLoad(options) {
-		this.menuHeight = store.getters.navHeight;
+		this.menuHeight = this.$store.getters['systemInfo/systemInfo'].navHeight;
 		this.debounce = debounce((e)=>{
 			if (e.scrollTop > this.menuHeight) {
 				this.navBarBackground = '#ffffff';

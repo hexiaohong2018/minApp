@@ -92,8 +92,8 @@ export default {
 			var is_first_run = true;
 			return function() {
 				if (is_first_run) {
-					this.navHeight = store.getters.navHeight + 52;
-					this.tabBarHeight = store.getters.tabBarHeight;
+					this.navHeight = this.$store.getters['systemInfo/systemInfo'].navHeight + 52;
+					this.tabBarHeight = this.$store.getters['systemInfo/systemInfo'].tabBarHeight;
 					this.debounce = debounce(
 						value => {
 							productList.searchProduct({ searchStr: value }).then(res => {

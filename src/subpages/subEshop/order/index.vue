@@ -145,7 +145,7 @@ export default {
 		this.active = state;
 		this.active_temp = state;
 		this.activeColor = setActiveColor(store.getters.navColor, '#ffffff');
-		this.tabBarHeight = store.getters.navHeight;
+		this.tabBarHeight = this.$store.getters['systemInfo/systemInfo'].navHeight;
 	},
 	methods: {
 		mescrollInit(mescroll) {

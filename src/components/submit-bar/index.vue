@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import { phoneInfo } from '../../utils/util.js';
 export default {
 	data() {
 		return {
@@ -44,9 +43,7 @@ export default {
 		}
 	},
 	created() {
-		phoneInfo().then(res => {
-			this.isIphoneX = res.isIphoneX;
-		});
+		this.isIphoneX = this.$store.getters['systemInfo/systemInfo'].isIphoneX
 	}
 };
 </script>

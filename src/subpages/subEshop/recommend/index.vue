@@ -63,7 +63,7 @@ export default {
 	},
 	onLoad() {
 		this.navColor = store.getters.navColor;
-		this.tabBarHeight = store.getters.navHeight + 172;
+		this.tabBarHeight = this.$store.getters['systemInfo/systemInfo'].navHeight + 172;
 	},
 	methods: {
 		mescrollInit(mescroll) {

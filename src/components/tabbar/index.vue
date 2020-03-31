@@ -1,5 +1,5 @@
 <template>
-	<view class="tab-bar-content" :class="{ shadow: border,safe:iphoneX }" :style="{zIndex:zIndex}">
+	<view class="tab-bar-content" :class="{ shadow: border,safe:systemInfo.isIphoneX }" :style="{zIndex:zIndex}">
 		<view class="item" v-for="(item, index) in items" 
 		:key="item.title" 
 		:style="{ color: _index == index? _activeColor:inactiveColor}" @click="change(index)">
@@ -12,14 +12,11 @@
 </template>
 
 <script>
-	import {phoneInfo,setActiveColor} from '../../utils/util.js'
+	import {setActiveColor} from '../../utils/util.js';
+	import{mapGetters} from 'vuex';
 	
 export default {
-	data(){
-		return{
-			iphoneX:false
-		}
-	},
+
 	props: {
 		active:{
 			type: [String, Number],
@@ -50,17 +47,15 @@ export default {
 			}
 		}
 	},
-	created() {
-		phoneInfo().then(res=>{
-			this.iphoneX = res.isIphoneX;
-		})
-	},
 	methods:{
 		change(index){
 			this.$emit('change',this.name?this.items[index].name:index);
 		}
 	},
 	computed: {
+		...mapGetters({
+			systemInfo:'systemInfo/systemInfo'
+		}),
 		_activeColor(){
 			return setActiveColor(this.activeColor,"#f44")
 		},

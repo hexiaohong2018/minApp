@@ -10,7 +10,7 @@
 				<view
 					class="img"
 					:style="{ backgroundImage: 'url(' + item.sv_p_images2 + ')', width: mode == 0 ? '32%' : '100%', paddingBottom: mode == 0 ? '32%' : '100%' }"
-					@click="$emit('click', item.product_id,item.config_id||item.sv_assemble_config_id)"
+					@click="$emit('click', item.product_id, item.config_id || item.sv_assemble_config_id)"
 				></view>
 				<view class="card-content" :style="{ width: mode == 0 ? '68%' : '100%' }">
 					<view class="des ellipsis-2" :style="{ height: 100 - size * 8 + 'rpx' }">{{ item.sv_remark || item.sv_p_name }}</view>
@@ -27,10 +27,10 @@
 						</view>
 						<view v-if="item.begin" class="begin">限购{{ item.begin.limit }}件 {{ item.begin.beginTime }}开抢</view>
 					</view>
-					<view class="price-op" @click="$emit('submit', item.product_id, item.config_id||item.sv_assemble_config_id)">
+					<view class="price-op" @click="$emit('submit', item.product_id, item.config_id || item.sv_assemble_config_id)">
 						<view v-if="type == 'sec' || type == 'normal'" class="price" :style="{ color: _color, fontSize: 30 - size + 'rpx' }">{{ `￥${item.product_price}` }}</view>
 						<view v-else class="price" :style="{ color: _color, fontSize: 30 - size + 'rpx' }">{{ `积分${item.sv_p_integral}` }}</view>
-						<view class="storage" v-if="mode != 3 && type=='normal'">库存：{{ item.sv_p_storage }}</view>
+						<view class="storage" v-if="!shopInfo.zeroInventorySales && mode != 3 && type == 'normal'">库存：{{ item.sv_p_storage }}</view>
 						<view class="op">
 							<text v-if="text" :style="{ fontSize: 30 - size * 3 + 'rpx', backgroundColor: _color }">{{ text }}</text>
 							<view v-else class="iconfont-vant icon-vant-cart-circle-o" :style="{ color: _color, fontSize: 45 - size + 'rpx' }"></view>
@@ -46,6 +46,7 @@ import { ProductList, Seckill } from '../../utils/class.js';
 import { setActiveColor } from '../../utils/util.js';
 const productList = new ProductList();
 const secKill = new Seckill();
+import { mapGetters } from 'vuex';
 export default {
 	props: {
 		text: String,
@@ -75,7 +76,10 @@ export default {
 		},
 		_color() {
 			return setActiveColor(this.color, '#f44');
-		}
+		},
+		...mapGetters({
+			shopInfo: 'loginInfo/shopInfo'
+		})
 	}
 };
 </script>

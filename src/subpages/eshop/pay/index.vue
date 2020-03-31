@@ -1,5 +1,5 @@
 <template>
-	<view class="pay">
+	<view class="pay-content">
 		<dc-nav-bar arrow clear-float :background="navColor">
 			<template v-slot:title>
 				<view class="tab">
@@ -20,94 +20,96 @@
 				</view>
 			</template>
 		</dc-nav-bar>
-		<button class="reg" v-if="memberInfo.member_id <= 0" open-type="getUserInfo" @getuserinfo="onReg"></button>
-		<view class="send-time">
-			<dc-list :title="consignee" :label="addr" :is-link="delivery == '0' ? false : true" :url="delivery == '0' ? '' : '../../common/addressList/index'">
-				<template v-slot:icon>
-					<view class="iconfont-vant" :class="delivery == '0' ? 'icon-vant-shop-o' : 'icon-vant-location'"></view>
-				</template>
-			</dc-list>
-			<image class="border" src="../../../static/border.png" mode="aspectFit"></image>
-		</view>
-		<view class="send-time" @click="onShowp"><dc-list :title="delivery == '0' ? '自提时间' : '配送时间'" :value="sendTime" is-link /></view>
-
-		<ul class="producs">
-			<view class="title">商品列表</view>
-			<li class="item" v-for="(product, index) in cartInfo.cart_list" :key="product.product_id">
-				<dc-list
-					:icon="product.sv_p_images2"
-					:title="product.sv_remark || product.sv_p_name"
-					iconSize="150rpx"
-					:border="index < cartInfo.cart_list.length - 1 ? true : false"
-					style="width:100vw"
-				>
-					<template v-slot:label>
-						<view class="des-price">
-							<view class="des">{{ product.sv_p_specs }}</view>
-							<view class="price">¥ {{ product.product_unitprice }}</view>
-						</view>
-					</template>
-					<template v-slot:right-icon>
-						<view class="num">x{{ product.sv_pricing_method == 1 ? product.sv_p_weight : product.product_num }}</view>
+		<button class="reg" v-if="memberCardInfo.member_id <= 0" open-type="getUserInfo" @getuserinfo="onReg"></button>
+		<scroll-view class="pay" scroll-y>
+			<view class="send-time">
+				<dc-list :title="consignee" :label="addr" :is-link="delivery == '0' ? false : true" :url="delivery == '0' ? '' : '../../common/addressList/index'">
+					<template v-slot:icon>
+						<view class="iconfont-vant" :class="delivery == '0' ? 'icon-vant-shop-o' : 'icon-vant-location'"></view>
 					</template>
 				</dc-list>
-			</li>
-		</ul>
-		<view class="discountinformation" v-if="sv_ml_commondiscount != 10">
-			<view>
-				优惠信息
-				<text style="font-size: 24rpx;">（会员）</text>
+				<image class="border" src="../../../static/border.png" mode="aspectFit"></image>
 			</view>
-			<view>
-				享受
-				<text class="colorbase1">{{ sv_ml_commondiscount }}</text>
-				折
-			</view>
-		</view>
-		<view v-if="delivery == 1" class="fr colorbase1">{{ freightInfo }}</view>
-		<view v-if="buystate == 0" class="coupon">
-			<dc-list :title="`优惠券${coupons[selectCouponIndex] ? ' 已选:' + coupons[selectCouponIndex].sv_coupon_name : ''}`" isLink @click="openCoupon">
-				<text class="gray" v-if="!coupons[selectCouponIndex]">{{ invalidConponConts > 0 ? invalidConponConts + '张可用' : '无可用' }}</text>
-				<text class="colorbase1" v-else>
-					<block v-if="coupons[selectCouponIndex].sv_coupon_type == 1">{{ coupons[selectCouponIndex].sv_coupon_money }}折</block>
-					<block v-else>-¥{{ coupons[selectCouponIndex].sv_coupon_money }}</block>
-				</text>
-			</dc-list>
-		</view>
-		<!-- 支付方式,type:0，前台支付，1，微信支付，2，余额支付 -->
-		<radio-group class="pay-method" @change="checkedPayStyle">
-			<view class="title">支付方式</view>
-			<label v-if="payMethods['receptionPay']">
-				<dc-list :title="delivery == 0 ? '前台支付' : '货到付款'" :style="{ width: '100vw' }">
-					<template v-slot:icon>
-						<view class="iconfont-vant icon-vant-balance-pay" style="color: #ff5c00;"></view>
-					</template>
-				</dc-list>
-				<radio value="0" :color="checkedColor" :style="{ transform: 'scale(0.7)' }" :checked="pay_modle == 0"></radio>
-			</label>
-			<label v-if="payMethods['memberPay']">
-				<dc-list title="储值卡支付" :style="{ width: '100vw' }">
-					<template v-slot:icon>
-						<view class="iconfont-vant icon-vant-debit-pay" style="color: orange;"></view>
-					</template>
-					<template v-slot:right-icon>
-						<view class="momey" v-if="memberInfo.sv_mw_availableamount > 0">余额：{{ memberInfo.sv_mw_availableamount }}</view>
-						<button class="pay-reg" v-if="memberInfo.member_id <= 0" open-type="getUserInfo" @getuserinfo="onReg">注册会员</button>
-					</template>
-				</dc-list>
-				<radio value="2" :color="checkedColor" :style="{ transform: 'scale(0.7)' }" :checked="pay_modle == 2"></radio>
-			</label>
-			<label v-if="payMethods['wecahtPay']">
-				<dc-list title="微信支付" :style="{ width: '100vw' }">
-					<template v-slot:icon>
-						<view class="iconfont-dc icon-dc-weixinzhifu" style="color: #006400;"></view>
-					</template>
-				</dc-list>
-				<radio value="1" :color="checkedColor" :style="{ transform: 'scale(0.7)' }" :checked="pay_modle == 1"></radio>
-			</label>
-		</radio-group>
+			<view class="send-time" @click="onShowp"><dc-list :title="delivery == '0' ? '自提时间' : '配送时间'" :value="sendTime" is-link /></view>
 
-		<input class="uni-input" :value="remark" type="text" placeholder="填写备注信息" @blur="changeRemark" />
+			<ul class="producs">
+				<view class="title">商品列表</view>
+				<li class="item" v-for="(product, index) in cartInfo.cart_list" :key="product.product_id">
+					<dc-list
+						:icon="product.sv_p_images2"
+						:title="product.sv_remark || product.sv_p_name"
+						iconSize="150rpx"
+						:border="index < cartInfo.cart_list.length - 1 ? true : false"
+						style="width:100vw"
+					>
+						<template v-slot:label>
+							<view class="des-price">
+								<view class="des">{{ product.sv_p_specs }}</view>
+								<view class="price">¥ {{ product.product_unitprice }}</view>
+							</view>
+						</template>
+						<template v-slot:right-icon>
+							<view class="num">x{{ product.sv_pricing_method == 1 ? product.sv_p_weight : product.product_num }}</view>
+						</template>
+					</dc-list>
+				</li>
+			</ul>
+			<view class="discountinformation" v-if="sv_ml_commondiscount != 10">
+				<view>
+					优惠信息
+					<text style="font-size: 24rpx;">（会员）</text>
+				</view>
+				<view>
+					享受
+					<text class="colorbase1">{{ sv_ml_commondiscount }}</text>
+					折
+				</view>
+			</view>
+			<view v-if="delivery == 1" class="fr colorbase1">{{ freightInfo }}</view>
+			<view v-if="buystate == 0" class="coupon">
+				<dc-list :title="`优惠券${coupons[selectCouponIndex] ? ' 已选:' + coupons[selectCouponIndex].sv_coupon_name : ''}`" isLink @click="openCoupon">
+					<text class="gray" v-if="!coupons[selectCouponIndex]">{{ invalidConponConts > 0 ? invalidConponConts + '张可用' : '无可用' }}</text>
+					<text class="colorbase1" v-else>
+						<block v-if="coupons[selectCouponIndex].sv_coupon_type == 1">{{ coupons[selectCouponIndex].sv_coupon_money }}折</block>
+						<block v-else>-¥{{ coupons[selectCouponIndex].sv_coupon_money }}</block>
+					</text>
+				</dc-list>
+			</view>
+			<!-- 支付方式,type:0，前台支付，1，微信支付，2，余额支付 -->
+			<radio-group class="pay-method" @change="checkedPayStyle">
+				<view class="title">支付方式</view>
+				<label v-if="payMethods['receptionPay']">
+					<dc-list :title="delivery == 0 ? '前台支付' : '货到付款'" :style="{ width: '100vw' }">
+						<template v-slot:icon>
+							<view class="iconfont-vant icon-vant-balance-pay" style="color: #ff5c00;"></view>
+						</template>
+					</dc-list>
+					<radio value="0" :color="checkedColor" :style="{ transform: 'scale(0.7)' }" :checked="pay_modle == 0"></radio>
+				</label>
+				<label v-if="payMethods['memberPay']">
+					<dc-list title="储值卡支付" :style="{ width: '100vw' }">
+						<template v-slot:icon>
+							<view class="iconfont-vant icon-vant-debit-pay" style="color: orange;"></view>
+						</template>
+						<template v-slot:right-icon>
+							<view class="momey" v-if="memberCardInfo.sv_mw_availableamount > 0">余额：{{ memberCardInfo.sv_mw_availableamount }}</view>
+							<button class="pay-reg" v-if="memberCardInfo.member_id <= 0" open-type="getUserInfo" @getuserinfo="onReg">注册会员</button>
+						</template>
+					</dc-list>
+					<radio value="2" :color="checkedColor" :style="{ transform: 'scale(0.7)' }" :checked="pay_modle == 2"></radio>
+				</label>
+				<label v-if="payMethods['wecahtPay']">
+					<dc-list title="微信支付" :style="{ width: '100vw' }">
+						<template v-slot:icon>
+							<view class="iconfont-dc icon-dc-weixinzhifu" style="color: #006400;"></view>
+						</template>
+					</dc-list>
+					<radio value="1" :color="checkedColor" :style="{ transform: 'scale(0.7)' }" :checked="pay_modle == 1"></radio>
+				</label>
+			</radio-group>
+
+			<input class="uni-input" :value="remark" type="text" placeholder="填写备注信息" @blur="changeRemark" />
+		</scroll-view>
 
 		<dc-submit-bar buttonText="确定下单" :price="totalPriceWidthDeliver" @click="onSubmit">{{ delivery == 1 ? deliveryText : '' }}</dc-submit-bar>
 
@@ -118,12 +120,12 @@
 					优惠券
 					<view class="iconfont-vant icon-vant-close" @click="cancelCoupon"></view>
 				</view>
-				<view class="coupon-container">
+				<scroll-view class="coupon-container" scroll-y>
 					<label v-for="(coupon, index) in coupons" :key="coupon.sv_coupon_id" @click="$event.stopPropagation()">
-						<dc-template-coupon :coupon="coupon" margin="0" :style="{ width: '81vw' }" :color="navColor"></dc-template-coupon>
+						<dc-template-coupon :coupon="coupon" margin="0" :style="{ width: '81vw', marginRight: '10rpx' }" :color="navColor"></dc-template-coupon>
 						<radio :style="{ transform: 'scale(0.7)' }" :color="checkedColor" :value="index" :disabled="coupon.disabled" :checked="coupon.checked"></radio>
 					</label>
-				</view>
+				</scroll-view>
 			</radio-group>
 		</uni-popup>
 	</view>
@@ -156,7 +158,6 @@ export default {
 			coupons: [],
 			selectCouponIndex: -1,
 			navColor: '',
-			// memberInfo: null,
 			cartInfo: null,
 			totalPrice: 0, //计算后的总结，不含运费
 			addr: '填写收货地址', //收货地址
@@ -185,7 +186,7 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			memberInfo: 'loginInfo/memberInfo'
+			memberCardInfo: 'loginInfo/memberCardInfo'
 		}),
 		inactiveColor() {
 			return isDeepColor(this.navColor) ? 'rgba(255,255,255,.8)' : 'rgba(0,0,0,.3)';
@@ -215,7 +216,7 @@ export default {
 		deliveryText() {
 			if (this.cartInfo) {
 				var deliveryText = '',
-					freight = this.shopInfo.freight, // this.shopInfo.freight,
+					freight = this.shopInfo.freight,
 					totalPrice = this.cartInfo.total_price;
 				if (this.delivery == '1') {
 					if (freight) {
@@ -270,15 +271,8 @@ export default {
 		});
 	},
 	onShow() {
-		if (this.memberInfo.member_id <= 0) {
-			user.getMemberCardInfo().then(res => {
-				this.sv_ml_commondiscount = this.buystate != '0' ? 10 : res.sv_ml_commondiscount || 10; //如果是活动不显示会员折扣
-				this.pay_modle = res.sv_mw_availableamount > 0 ? 2 : 1; //余额足够则余额支付，否则微信
-			});
-		} else {
-			this.sv_ml_commondiscount = this.buystate != '0' ? 10 : this.memberInfo.sv_ml_commondiscount || 10; //如果是活动不显示会员折扣
-			this.pay_modle = this.memberInfo.sv_mw_availableamount > 0 ? 2 : 1; //余额足够则余额支付，否则微信
-		}
+		this.sv_ml_commondiscount = this.buystate != '0' ? 10 : this.memberCardInfo.sv_ml_commondiscount || 10; //如果是活动不显示会员折扣
+		this.pay_modle = this.memberCardInfo.sv_mw_availableamount > 0 ? 2 : 1; //余额足够则余额支付，否则微信
 
 		//获取地址信息
 		address.getAddressList({ def: true }).then(addr => {
@@ -327,7 +321,7 @@ export default {
 		 * @param {*} msg 提示消息
 		 */
 		_printCallback({ orderId, shopID, msg }) {
-			msg && showToastFn(msg);
+			msg && msg != '支付成功' && showToastFn(msg);
 			let activityInfo = this.activityInfo,
 				url = '../../subEshop/paySuccess/index?orderId=' + orderId;
 			if (activityInfo.assembleconfigid) {
@@ -347,18 +341,42 @@ export default {
 			netRequest
 				.printCallback(shopID) //后台发出声音
 				.then(res => {
-					setTimeout(() => {
+					if (msg != '支付成功') {
 						uni.reLaunch({
 							url
 						});
-					}, 2000);
+					} else {
+						var time = 10;
+						var timer = setInterval(function() {
+							if (time == 0) {
+								clearInterval(timer);
+								uni.reLaunch({
+									url
+								});
+							} else {
+								showToastFn(`支付成功：${time--}s`);
+							}
+						}, 1000);
+					}
 				})
 				.catch(msg => {
-					setTimeout(() => {
+					if (msg != '支付成功') {
 						uni.reLaunch({
 							url
 						});
-					}, 2000);
+					} else {
+						var time = 10;
+						var timer = setInterval(function() {
+							if (time == 0) {
+								clearInterval(timer);
+								uni.reLaunch({
+									url
+								});
+							} else {
+								showToastFn(`支付成功：${timer--}s`);
+							}
+						}, 1000);
+					}
 				});
 		},
 
@@ -367,7 +385,7 @@ export default {
 				sv_remark: this.remark,
 				sv_shipping_methods: this.delivery, //配送方式
 				sv_payment_type: 0, // 支付方式
-				member_id: this.memberInfo.member_id, //会员id
+				member_id: this.memberCardInfo.member_id, //会员id
 				sv_receipt_id: this.sv_receipt_id, //外卖地址
 				sv_coupon_id: index ? this.coupons[index].sv_coupon_id : 0,
 				sv_record_id: index ? this.coupons[index].sv_record_id : 0,
@@ -457,7 +475,6 @@ export default {
 				//是否营业
 				let delivery = this.delivery, //配送方式方式
 					sv_payment_type = this.pay_modle, //支付方式
-					sv_mw_availableamount = this.sv_mw_availableamount, //会员余额
 					totalPrice = this.totalPrice + this.pack_cost,
 					freight = this.shopInfo.freight, //运费信息
 					sv_receipt_id = this.sv_receipt_id, //地址id
@@ -482,12 +499,11 @@ export default {
 						return;
 					}
 				}
-
-				if (sv_payment_type == 2 && sv_mw_availableamount < totalPrice) {
+				if (sv_payment_type == 2 && this.memberCardInfo.sv_mw_availableamount < totalPrice) {
 					//储值卡支付
 					showModalFn('储值卡余额不足，是否去充值', function() {
 						uni.navigateTo({
-							url: '../recharge/index?sv_mw_availableamount=' + this.sv_mw_availableamount
+							url: '../../subEshop/recharge/index'
 						});
 					});
 					return;
@@ -509,7 +525,7 @@ export default {
 					sv_remark: this.sv_remark,
 					sv_shipping_methods: delivery, //配送方式
 					sv_payment_type, // 支付方式
-					member_id: this.memberInfo.member_id, //会员id
+					member_id: this.memberCardInfo.member_id, //会员id
 					sv_receipt_id, //外卖地址
 					sv_coupon_id: selectCouponIndex > -1 ? coupons[selectCouponIndex].sv_coupon_id : 0,
 					sv_record_id: selectCouponIndex > -1 ? coupons[selectCouponIndex].sv_record_id : 0,
@@ -584,12 +600,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.pay {
+.pay-content {
 	width: 100vw;
 	box-sizing: border-box;
 	background: white;
 	position: relative;
-	margin-bottom: 90px;
+	// margin-bottom: 90px;
 	.tab {
 		display: flex;
 		justify-content: flex-start;
@@ -630,6 +646,12 @@ export default {
 	}
 	.reg:after {
 		border: 0;
+	}
+	.pay {
+		min-height: 100vh;
+		width: 100vw;
+		padding-bottom: 100px;
+		box-sizing: content-box;
 	}
 	.delivery {
 		font-size: 30rpx;
@@ -831,12 +853,16 @@ export default {
 		height: 900rpx;
 		background: white;
 		box-sizing: border-box;
-		padding: 0 30rpx 30rpx 30rpx;
-		overflow-y: scroll;
+		padding-bottom: 30rpx;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
 		label {
-			width: 100%;
+			width: 98%;
+			margin: auto;
 			display: flex;
-			justify-content: space-between;
+			justify-content: center;
 			align-items: center;
 			margin-top: 30rpx;
 		}

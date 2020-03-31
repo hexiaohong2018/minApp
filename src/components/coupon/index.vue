@@ -1,6 +1,6 @@
 <template>
 	<movable-area class="coupon-contet" v-if="show">
-		<movable-view class="coupons" direction="horizontal" inertia out-of-bounds>
+		<movable-view class="coupons" direction="horizontal" inertia out-of-bounds :style="{width: (items.length*66)+ 'vw'}">
 			<div class="coupon-item" v-for="item in items" :key="item.sv_coupon_id">
 				<div class="des" :style="'background:linear-gradient(130deg,' + beginColor + ' 20%, ' + endColor + ')'">
 					<div class="value">
@@ -72,7 +72,7 @@ export default {
 	width: 100vw;
 	height: 200rpx;
 	.coupons {
-		width: 150%;
+		// width: 150%;
 		height: 100%;
 		box-sizing: border-box;
 		padding: 10rpx 10rpx;
@@ -80,7 +80,7 @@ export default {
 		justify-content: flex-start;
 		align-items: center;
 		.coupon-item {
-			width: 45%;
+			width: 66vw;
 			height: 100%;
 			display: flex;
 			justify-content: center;
@@ -130,7 +130,7 @@ export default {
 			}
 			.get {
 				height: 100%;
-				width: 36%;
+				width: 33%;
 				font-size: 30rpx;
 				display: flex;
 				flex-direction: column;

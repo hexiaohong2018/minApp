@@ -23,6 +23,9 @@ export default {
 		},
 		memberCardInfo(state){
 			return state.memberCardInfo;
+		},
+		login(state){
+			return state
 		}
 	},
 	mutations: {

@@ -3,21 +3,16 @@
 import store from '../../utils/store.js';
 import { User } from '../../utils/class.js';
 import { phoneInfo, showModalFn } from '../../utils/util.js';
-const app = getApp();
-// Object.assign(app, util, lib);
+import {mapGetters} from 'vuex';
 const user = new User();
 export default {
 	onLoad(options) {
 		uni.hideTabBar();
 		this.updateApp(); //检查是否有新发布的小程序
-		phoneInfo().then(res => {
-			store.dispatch('setNavHeight', res.statusBarHeight + res.menuHeight);//顶部导航栏高度
-			store.dispatch('setTabBarHeight',res.isIphoneX?86:56);//底部tabbar栏高度
-			
-			if(res.version && res.SDKVersion){
+			if(this.systemInfo.version && this.systemInfo.SDKVersion){
 				// version,//微信版本号 6.6.0以上支持navigationStyle
 				//SDKVersion:SDKVersion,//基础库信息 2.5.0以上支持自定tabbar
-				if (this.compareVersions(res.version, '6.6.0') == -1 || this.compareVersions(res.SDKVersion, '2.5.0') == -1) {
+				if (this.compareVersions(this.systemInfo.version, '6.6.0') == -1 || this.compareVersions(this.systemInfo.SDKVersion, '2.5.0') == -1) {
 					//低于版本要求
 					showModalFn('微信版本过低，请升级');
 				} else {
@@ -34,8 +29,12 @@ export default {
 					});
 				});
 			}
-			
-		});
+	
+	},
+	computed:{
+		...mapGetters({
+			systemInfo:'systemInfo/systemInfo'
+		})
 	},
 	methods: {
 		compareVersions(sources, dests) {

@@ -134,7 +134,7 @@ export default {
 
   created () {
     this.activeColor = setActiveColor(store.getters.navColor,"#f44")
-    this.navHeight = store.getters.navHeight - 22
+    this.navHeight = this.$store.getters['systemInfo/systemInfo'].navHeight - 22
     this.getMyServices()
   }
 

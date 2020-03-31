@@ -9,22 +9,22 @@
 			</uni-grid-item>
 		</uni-grid>
 		<uni-grid v-else :column="3" :show-border="false" :square="false" :highlight="false">
-			<uni-grid-item >
+			<uni-grid-item>
 				<view class="item">
 					<view class="iconfont-vant icon-vant-points"></view>
 					<view class="des">
-						<text>9510</text>
+						<text>{{memberCardInfo.sv_mw_availablepoint}}</text>
 						积分
 					</view>
 				</view>
 			</uni-grid-item>
-			<uni-grid-item >
+			<uni-grid-item>
 				<view class="item" @click="checkRecord">
 					<view class="iconfont-vant icon-vant-orders-o"></view>
 					<view class="des">兑换记录</view>
 				</view>
-			</uni-grid-item >
-			<uni-grid-item >
+			</uni-grid-item>
+			<uni-grid-item>
 				<view class="item" @click="goEshop">
 					<view class="iconfont-vant icon-vant-shop-o"></view>
 					<view class="des">积分商城</view>
@@ -41,25 +41,29 @@
 import uniGrid from '@/components/uni-grid/uni-grid.vue';
 import uniGridItem from '@/components/uni-grid-item/uni-grid-item.vue';
 import dcProduct from '../../components/product/index.vue';
-import uniLoadMore from '../../components/uni-load-more/uni-load-more.vue'
-import dcList from '../../components/list/index.vue'
+import uniLoadMore from '../../components/uni-load-more/uni-load-more.vue';
+import dcList from '../../components/list/index.vue';
 import product from '../../components/product';
-import dcField from '../../components/field/index.vue'
+import dcField from '../../components/field/index.vue';
 
-
-import {showToastFn} from '../../utils/util.js';
-import {User,Integral} from '../../utils/class.js';
+import { showToastFn } from '../../utils/util.js';
+import { User, Integral } from '../../utils/class.js';
+import { mapGetters } from 'vuex';
 const user = new User();
 const integral = new Integral();
-
 
 export default {
 	data() {
 		return {
 			loadStatus: true,
 			products: [],
-			memberInfo: {},
 		};
+	},
+	computed:{
+		...mapGetters({
+			memberInfo: 'loginInfo/memberInfo',
+			memberCardInfo:'loginInfo/memberCardInfo'
+		})
 	},
 	onLoad() {
 		uni.hideTabBar();
@@ -69,13 +73,14 @@ export default {
 	},
 	onShareAppMessage() {
 		var shopInfo = this.$store.getters['loginInfo/shopInfo'];
+		
 		return {
 			title: shopInfo.shop_name,
 			imageUrl: shopInfo.sv_us_logo,
 			path: '/pages/integral/index'
 		};
 	},
-	components: { uniGrid, uniGridItem, dcProduct,dcList,uniLoadMore,dcField},
+	components: { uniGrid, uniGridItem, dcProduct, dcList, uniLoadMore, dcField },
 	onPullDownRefresh() {
 		uni.removeStorageSync('expiredTime');
 		this._login().then(res => {
@@ -88,7 +93,6 @@ export default {
 		integral
 			.getProductList()
 			.then(res => {
-				
 				this.loadStatus = res.isAll ? false : true;
 				this.products.push(...res.list);
 			})
@@ -98,46 +102,47 @@ export default {
 	},
 	methods: {
 		_login() {
-			return user.login().then(res => {
-				var loginInof = res;
-				return integral
-					.getProductList(1)
-					.then(res => {
-						this.loadStatus = true;
-						loginInof.memberInfo.sv_mw_availablepoint = res.availablepoint;
-						this.memberInfo = loginInof.memberInfo;
-						this.$store.dispatch('loginInfo/setLogin',loginInfo);
-						this.loadStatus = res.isAll ? false : true;
-						this.products = res.list;
-					})
-					.catch(msg => {
-						console.log(msg);
-					});
-			});
+			return user
+				.login()
+				.then(res => {
+					return integral.getProductList(1);
+				})
+				.then(res => {
+					this.loadStatus = true;
+					// loginInfo.memberInfo.sv_mw_availablepoint = res.availablepoint;
+					// this.memberInfo = this.memberInfo;
+					// this.$store.dispatch('loginInfo/setLogin', loginInfo);
+					this.loadStatus = res.isAll ? false : true;
+					this.products = res.list;
+				})
+				.catch(msg => {
+					console.log(msg);
+					return Promise.reject(msg);
+				});
 		},
 		goTo(id) {
 			uni.navigateTo({
 				url: '../../subpages/integral/productInfo/index?id=' + id
 			});
 		},
-		goEshop(){
+		goEshop() {
 			uni.switchTab({
-				url:'../eshop/index'
-			})
+				url: '../eshop/index'
+			});
 		},
-		checkRecord(index){
+		checkRecord(index) {
 			uni.navigateTo({
 				url: '../../subpages/integral/order/index'
 			});
 		},
-		goEshop(){
+		goEshop() {
 			uni.switchTab({
-				url:"../eshop/index"
-			})
+				url: '../eshop/index'
+			});
 		},
 		onSubmit(id) {
-			var product = this.products.find(item=> item.product_id == id);
-			if (product.sv_p_integral > this.$store.getters['loginInfo/memberInfo'].sv_mw_availablepoint) {
+			var product = this.products.find(item => item.product_id == id);
+			if (product.sv_p_integral > this.memberInfo.sv_mw_availablepoint) {
 				showToastFn('积分不够');
 			} else {
 				uni.setStorage({
@@ -166,7 +171,7 @@ export default {
 	color: #333;
 	overflow-x: hidden;
 	box-sizing: border-box;
-	.wx-info{
+	.wx-info {
 		width: 100vw;
 		height: 200rpx;
 		background: white;
@@ -188,7 +193,7 @@ export default {
 		.des {
 			color: #666;
 			letter-spacing: 0.1rem;
-		
+
 			text {
 				color: #fd7108;
 				font-weight: 600;
@@ -196,8 +201,7 @@ export default {
 			}
 		}
 	}
-	
-	
+
 	.item {
 		background-color: white;
 		display: flex;

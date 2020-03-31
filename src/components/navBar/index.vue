@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { phoneInfo, setNavBarColor, isDeepColor } from '../../utils/util.js';
+import {setNavBarColor, isDeepColor } from '../../utils/util.js';
 import store from '../../utils/store.js';
 
 export default {
@@ -44,12 +44,14 @@ export default {
 	},
 	beforeMount() {
 		// 在组件实例进入页面节点树时执行
-		phoneInfo().then(res => {
-			this.backGround = this.background || store.getters.navColor;
-			this.statusBarHeight = res.statusBarHeight;
-			this.menuHeight = res.menuHeight;
+		let systemInfo =  this.$store.getters['systemInfo/systemInfo'];
+
+		this.backGround = this.background || store.getters.navColor;
+			this.statusBarHeight = systemInfo.statusBarHeight;
+			this.menuHeight = systemInfo.menuHeight;
 			setNavBarColor(this.backGround);
-		});
+
+		
 	},
 	watch: {
 		background: function(newValue) {

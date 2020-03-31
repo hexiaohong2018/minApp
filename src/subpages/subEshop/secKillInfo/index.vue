@@ -48,10 +48,18 @@
 				<dc-goods-action-icon icon="chat-o" open-type="contact" text="客服"></dc-goods-action-icon>
 			</template>
 			<template v-slot:btns>
-				<view class="commit" @click="onSecKill(start != 2, {
+				<view
+					class="commit"
+					@click="
+						onSecKill(start, {
 							id: product.sv_assemble_cdetail_pid,
-							cid: product.sv_assemble_config_id
-						})">{{start == 2 ? '已结束' : '马上抢'}}</view>
+							cid: product.sv_assemble_config_id,
+							sv_is_newspec: product.sv_is_newspec
+						})
+					"
+				>
+					{{ start == 2 ? '已结束' : start == 1 ? '马上抢' : '未开始' }}
+				</view>
 			</template>
 		</dc-goods-action>
 
@@ -63,7 +71,6 @@
 			@comfirm="onComfrim"
 			@close="closeFeature"
 		></product-feature>
-
 
 		<!-- 分享 -->
 		<dc-poster z-index="1000" :share-info="shareInfo" :show="showPoseter" :color="activeColor"></dc-poster>
@@ -84,14 +91,13 @@ import dcNavBar from '../../../components/navBar/index.vue';
 import dcGoodsAction from '../../../components/goodsAction/index.vue';
 import dcGoodsActionIcon from '../../../components/goodsActionIcon/index.vue';
 import dcGoodsActionBtn from '../../../components/goodsActionButton/index.vue';
-import { debounce } from '../../../utils/common.js'
+import { debounce } from '../../../utils/common.js';
 export default {
 	data() {
 		return {
 			memberInfo: {},
 			product: {},
-			start: 0,
-			//即将开抢,1秒杀计时,2秒杀结束
+			start: 0, //即将开抢,1秒杀计时,2秒杀结束
 			timer: null,
 			hTime: '00',
 			mTime: '00',
@@ -101,9 +107,9 @@ export default {
 			shareInfo: {},
 			productId: '',
 			configId: '',
-			navBarBackground:'transparent',
-			activeColor:'',
-			menuHeight: 0,
+			navBarBackground: 'transparent',
+			activeColor: '',
+			menuHeight: 0
 		};
 	},
 
@@ -124,15 +130,19 @@ export default {
 	onLoad: function(options) {
 		var params = decodeWXCodeParams(options); //解析参数
 		this.activeColor = store.getters.navColor;
-		this.menuHeight = store.getters.navHeight;
-		this.debounce = debounce((e)=>{
-			if (e.scrollTop > this.menuHeight) {
-				this.navBarBackground = this.activeColor;
-			} else {
-				this.navBarBackground = 'transparent';
-			}
-		},600,false)
-		
+		this.menuHeight = this.$store.getters['systemInfo/systemInfo'].navHeight;
+		this.debounce = debounce(
+			e => {
+				if (e.scrollTop > this.menuHeight) {
+					this.navBarBackground = this.activeColor;
+				} else {
+					this.navBarBackground = 'transparent';
+				}
+			},
+			600,
+			false
+		);
+
 		if (params.s) {
 			user.login().then(res => {
 				let loginInfo = res;
@@ -187,7 +197,7 @@ export default {
 
 		more() {
 			uni.navigateTo({
-				url:'../seckill/index'
+				url: '../seckill/index'
 			});
 		},
 
@@ -211,27 +221,27 @@ export default {
 			this.formId = this.formId > 0 ? 0 : 123;
 		},
 
-		onSecKill() {
-			var product = this.product,
-				activityInfo = {
+		onSecKill(start, e) {
+			if (start == 1) {
+				//判断是否为多规格
+				let activityInfo = {
 					buystate: 2,
-					productid: product.sv_assemble_cdetail_pid,
-					assembleconfigid: product.sv_assemble_config_id,
+					productid: e.id,
+					assembleconfigid: e.cid,
 					product_num: 1
-				}; //判断是否为多规格
+				};
 
-			if (product.sv_is_newspec) {
-				//保存开团信息
-				(this.productId = activityInfo.productid), (this.configId = activityInfo.assembleconfigid);
-
-				uni.setStorageSync('activityInfo', activityInfo);
-				// this.feature.showFeatureDialog(false);
-			} else {
-				//产品不是多规格
-				uni.setStorageSync('activityInfo', activityInfo);
-				uni.navigateTo({
-					url: '../clearing/index'
-				});
+				if (e.sv_is_newspec) {
+					//保存开团信息
+					(this.productId = activityInfo.productid), (this.configId = activityInfo.assembleconfigid);
+					uni.setStorageSync('activityInfo', activityInfo);
+				} else {
+					//产品不是多规格
+					uni.setStorageSync('activityInfo', activityInfo);
+					uni.navigateTo({
+						url: '../../eshop/pay/index'
+					});
+				}
 			}
 		},
 
@@ -274,17 +284,16 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.commit{
-	background: linear-gradient(45deg,rgb(255,96,52),rgb(238,10,36));
+.commit {
+	background: linear-gradient(45deg, rgb(255, 96, 52), rgb(238, 10, 36));
 	width: 440rpx;
 	height: 100%;
 	color: white;
 	display: flex;
-	justify-content:center;
+	justify-content: center;
 	align-items: center;
-	
 }
-.commit:active{
+.commit:active {
 	opacity: var(--active-opacity);
 }
 .seckill-info {
