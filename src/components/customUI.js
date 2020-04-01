@@ -1,9 +1,9 @@
 
-import utils from "../utils/util.js";
+import {type} from "../utils/util.js";
 
 function classifyModule(modules) {
   var modulesObj = null;
-  if (utils.type(modules) === "array" && modules.length > 0) {
+  if (type(modules) === "array" && modules.length > 0) {
     modulesObj = {};
     modules.forEach((item, index) => {
       if (!modulesObj[item.id]) {
@@ -20,15 +20,8 @@ function classifyModule(modules) {
   }
   return modulesObj;
 }
-const rpxTopx = function (rpxValue) {
-  return rpxValue / 750 * uni.getSystemInfoSync().windowWidth
-}
-const pxTorpx = function (pxValue) {
-  return pxValue * 750 / uni.getSystemInfoSync().windowWidth;
-}
+
 
 module.exports = {
-  rpxTopx,
-  pxTorpx,
   classifyModule
 }

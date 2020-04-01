@@ -73,14 +73,13 @@
 		></product-feature>
 
 		<!-- 分享 -->
-		<dc-poster z-index="1000" :share-info="shareInfo" :show="showPoseter" :color="activeColor"></dc-poster>
+		<dc-poster z-index="1000" :share-info="shareInfo" :show="showPoseter" :color="navColor"></dc-poster>
 	</view>
 </template>
 
 <script>
 import { Seckill, User } from '../../../utils/class.js';
 import { decodeWXCodeParams, formatDuring, showToastFn } from '../../../utils/util.js';
-import store from '../../../utils/store.js';
 const seckill = new Seckill();
 const user = new User();
 
@@ -92,10 +91,10 @@ import dcGoodsAction from '../../../components/goodsAction/index.vue';
 import dcGoodsActionIcon from '../../../components/goodsActionIcon/index.vue';
 import dcGoodsActionBtn from '../../../components/goodsActionButton/index.vue';
 import { debounce } from '../../../utils/common.js';
+import {mapGetters} from 'vuex';
 export default {
 	data() {
 		return {
-			memberInfo: {},
 			product: {},
 			start: 0, //即将开抢,1秒杀计时,2秒杀结束
 			timer: null,
@@ -108,7 +107,6 @@ export default {
 			productId: '',
 			configId: '',
 			navBarBackground: 'transparent',
-			activeColor: '',
 			menuHeight: 0
 		};
 	},
@@ -122,19 +120,24 @@ export default {
 		dcGoodsActionIcon,
 		dcGoodsActionBtn
 	},
-	props: {},
+	computed:{
+		...mapGetters({
+			systemInfo:'systemInfo/systemInfo',
+			memberInfo:'loginInfo/memberInfo',
+			navColor:'custom/navColor'
+		})
+	},
 
 	/**
 	 * 生命周期函数--监听页面加载
 	 */
 	onLoad: function(options) {
 		var params = decodeWXCodeParams(options); //解析参数
-		this.activeColor = store.getters.navColor;
-		this.menuHeight = this.$store.getters['systemInfo/systemInfo'].navHeight;
+		this.menuHeight = this.systemInfo.navHeight;
 		this.debounce = debounce(
 			e => {
 				if (e.scrollTop > this.menuHeight) {
-					this.navBarBackground = this.activeColor;
+					this.navBarBackground = this.navColor;
 				} else {
 					this.navBarBackground = 'transparent';
 				}
@@ -146,16 +149,11 @@ export default {
 		if (params.s) {
 			user.login().then(res => {
 				let loginInfo = res;
-				this.memberInfo = loginInfo.memberInfo;
 				this.getProductInfoFun(params.seckillId, params.id);
 			});
 		} else {
 			this.getProductInfoFun(params.seckillId, params.id);
 		}
-	},
-
-	onShow() {
-		this.memberInfo = this.$store.getters['loginInfo/memberInfo'];
 	},
 
 	/**

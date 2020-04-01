@@ -65,11 +65,9 @@ const bookService = new BookService();
 export default {
 	name: 'order',
 	props: {
-		show: {
-			default: false,
-			type: Boolean
-		},
-		color: String
+		show: Boolean,
+		color: String,
+		refresh:Boolean,
 	},
 	components: {
 		dcTabs

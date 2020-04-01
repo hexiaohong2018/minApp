@@ -27,7 +27,7 @@
 						<view class="iconfont-dc icon-dc-fendian" style="font-size: 80rpx"></view>
 					</template>
 				</dc-list>
-				<view class="btns">
+				<view class="btns" v-if="shop.phone || (shop.sv_us_coordinate && shop.sv_us_coordinate.lat)">
 					<view class="phone" v-if="shop.phone" @click="onPhone(shop.phone)">
 						<view class="iconfont-vant icon-vant-phone-o"></view>
 						{{ shop.phone }}
@@ -47,14 +47,12 @@ import dcList from '../../../components/list/index.vue';
 import uniSearchBar from '../../../components/uni-search-bar/uni-search-bar.vue';
 import { getDistance } from '../../../utils/util.js';
 import { Address } from '../../../utils/class.js';
-import store from '../../../utils/store.js';
 const address = new Address();
 export default {
 	components: { dcList, uniSearchBar },
 	data() {
 		return {
 			shopList: [],
-			// searchList: [],
 			nearShop: null
 		};
 	},
@@ -93,7 +91,7 @@ export default {
 			});
 		},
 		onSelect(uid) {
-			store.dispatch('setSalesUserId', uid);
+			this.$store.dispatch('loginInfo/setSalesUserId', uid);
 			uni.navigateBack({
 				delta: 1
 			});

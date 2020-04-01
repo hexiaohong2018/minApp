@@ -1,7 +1,6 @@
 <template>
 	<div v-show="show" class="info">
-		<button class="reg-btn" v-if="memberInfo.member_id <= 0" open-type="getUserInfo" lang="zh_CN" @getuserinfo="onGetUserInfo"></button>
-
+		<button class="reg-btn" v-if="!memberCardInfo.member_id ||memberCardInfo.member_id <= 0" open-type="getUserInfo" lang="zh_CN" @getuserinfo="onGetUserInfo"></button>
 		<div class="member-info" :style="{ backgroundColor: color, color: fontColor }">
 			<div class="wx-info">
 				<div class="head-img">
@@ -19,7 +18,7 @@
 					<!-- #ifndef MP-WEIXIN || MP-BAIDU || MP-QQ-->
 					{{ memberInfo.sv_nick_name || '' }}
 					<!-- #endif -->
-					<div v-if="memberInfo.member_id > 0" class="nikkname">{{ memberCardInfo.sv_ml_name }}</div>
+					<div v-if="memberCardInfo.member_id && memberCardInfo.member_id > 0" class="nikkname">{{ memberCardInfo.sv_ml_name }}</div>
 					<div v-else class="reg">登录/注册</div>
 				</div>
 			</div>
@@ -45,7 +44,7 @@
 					<view class="iconfont-vant icon-vant-vip-card-o"></view>
 					<text>VIP会员</text>
 				</div>
-				<text class="des">{{ memberInfo.member_id <= 0 ? '开通会员享受更多优惠' : '打开会员卡查看优惠信息' }}</text>
+				<text class="des">{{ memberCardInfo.member_id <= 0 ? '开通会员享受更多优惠' : '打开会员卡查看优惠信息' }}</text>
 			</div>
 
 			<div class="grid-group">
@@ -87,10 +86,10 @@
 					<view class="text">邀请有礼</view>
 				</view>
 
-				<view class="grid-item" @click="openReservation">
+				<!-- <view class="grid-item" @click="openReservation">
 					<view class="iconfont-vant icon-vant-todo-list-o"></view>
 					<view class="text">我的预约</view>
-				</view>
+				</view> -->
 
 				<view class="grid-item" @click="seckill">
 					<view class="iconfont-vant icon-vant-clock-o"></view>
@@ -102,10 +101,10 @@
 					<view class="text">拼团</view>
 				</view>
 
-				<view class="grid-item" @click="goIntegral">
+				<!-- <view class="grid-item" @click="goIntegral">
 					<view class="iconfont-vant icon-vant-shop-collect-o"></view>
 					<view class="text">积分商城</view>
-				</view>
+				</view> -->
 			</div>
 
 			<div class="grid-group">
@@ -149,7 +148,8 @@ export default {
 	name: 'info',
 	props: {
 		show: Boolean,
-		color: String
+		color: String,
+		refresh:Boolean,
 	},
 	data() {
 		return {
@@ -164,8 +164,8 @@ export default {
 			var is_first_run = true;
 			return function() {
 				if (is_first_run) {
-					this.navBarHeight = this.$store.getters['systemInfo/systemInfo'].navHeight + 128;
-					this.tabBarHeight = this.$store.getters['systemInfo/systemInfo'].tabBarHeight;
+					this.navBarHeight = this.systemInfo.navHeight + 128;
+					this.tabBarHeight = this.systemInfo.tabBarHeight;
 					is_first_run = false;
 				}
 			};
@@ -178,7 +178,9 @@ export default {
 		...mapGetters({
 			memberInfo: 'loginInfo/memberInfo',
 			memberCardInfo: 'loginInfo/memberCardInfo',
-			distributorInfo: 'loginInfo/distributorInfo'
+			distributorInfo: 'loginInfo/distributorInfo',
+			shopInfo:'loginInfo/shopInfo',
+			systemInfo:'systemInfo/systemInfo'
 		})
 	},
 	watch: {
@@ -189,17 +191,16 @@ export default {
 	},
 	methods: {
 		topUp() {
-			let shopInfo = this.$store.getters['loginInfo/shopInfo'],
-				extConfig = uni.getExtConfigSync ? uni.getExtConfigSync() : {}, //读取ext.json文件信息
+				let extConfig = uni.getExtConfigSync ? uni.getExtConfigSync() : {}, //读取ext.json文件信息
 				auditid = extConfig && extConfig.attr && extConfig.attr.auditid;
-			if (shopInfo.cantopup || shopInfo.usingid >= auditid) {
+			if (this.shopInfo.cantopup || this.shopInfo.usingid >= auditid) {
 				uni.navigateTo({
 					url: '../../subpages/subEshop/recharge/index'
 				});
 			}
 		},
 		downCallback(mescroll) {
-			uni.removeStorageSync('expiredTime');
+			this.$store.dispatch('loginInfo/setExpiredTime',null);
 			this.$parent.getUiConfig();
 			this.init()
 				.then(res => {
@@ -285,7 +286,7 @@ export default {
 			}
 		},
 		onPhone() {
-			const phoneNumber = this.$store.getters['loginInfo/shopInfo'].storePhoneNumber;
+			const phoneNumber = this.shopInfo.storePhoneNumber;
 			if (phoneNumber) {
 				uni.makePhoneCall({
 					phoneNumber

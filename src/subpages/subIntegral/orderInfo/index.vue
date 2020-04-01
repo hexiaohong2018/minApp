@@ -50,6 +50,7 @@
 import wxbarcode from 'wxbarcode';
 import { Integral } from '../../../utils/class.js';
 import { showToastFn } from '../../../utils/util.js';
+import { mapGetters } from 'vuex';
 import dcList from '../../../components/list/index.vue';
 const integral = new Integral();
 export default {
@@ -61,6 +62,11 @@ export default {
 			shopAddr: ''
 		};
 	},
+	computed:{
+		...mapGetters({
+			shopInfo:'loginInfo/shopInfo'
+		})
+	},
 	components: { dcList },
 	methods: {
 		goHome() {
@@ -69,7 +75,7 @@ export default {
 			});
 		},
 		navigatToShop() {
-			var shopInfo = this.$store.getters['loginInfo/shopInfo'];
+			var shopInfo = this.shopInfo;
 			if (!shopInfo.sv_us_coordinate || !shopInfo.shop_address) {
 				showToastFn(!shopInfo.sv_us_coordinate ? '店铺坐标为空无法导航' : '店铺地址为空导航');
 			} else {
@@ -81,7 +87,7 @@ export default {
 			}
 		},
 		onPhone() {
-			const phoneNumber = this.$store.getters['loginInfo/shopInfo'].storePhoneNumber;
+			const phoneNumber = this.shopInfo.storePhoneNumber;
 			if (phoneNumber) {
 				uni.makePhoneCall({
 					phoneNumber
@@ -100,8 +106,7 @@ export default {
 				if (res.sv_integral_pexchange_mode == 0) {
 					//这里通过核销码生成条形码，现在还没有数据
 					wxbarcode.barcode('barcode', '132165465465421', 504, 108);
-
-					let shopInfo = this.$store.getters['loginInfo/shopInfo'];
+					let shopInfo = this.shopInfo;
 					if (shopInfo) {
 						this.shopName = shopInfo.shop_name;
 						this.shopPhone = shopInfo.storePhoneNumber;

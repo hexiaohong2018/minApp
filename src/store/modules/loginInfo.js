@@ -5,8 +5,9 @@ export default {
 		memberInfo: null,
 		shopInfo: null,
 		distributorInfo: null,
-		expiredTime: null,
+		expiredTime: null,//登录有效时间
 		memberCardInfo:null,
+		recommend_member_id:0,//推荐人ID
 	},
 	getters: {
 		memberInfo(state) {
@@ -26,6 +27,12 @@ export default {
 		},
 		login(state){
 			return state
+		},
+		salesUserId(state){
+			return state.shopInfo.sales_user_id;
+		},
+		recommendMemberId(state){
+			return state.recommend_member_id;
 		}
 	},
 	mutations: {
@@ -46,9 +53,23 @@ export default {
 		},
 		_setMemberCardInfo(state,data){
 			state.memberCardInfo = data;
+		},
+		_setSalesUserId(state,data){
+			state.expiredTime = null;//切换门店时，去掉过期时间，重新登录
+			state.shopInfo.sales_user_id = data;
+		},
+		_setRecommendMemberId(state,data){
+			data > 0 && (state.expiredTime = null)//存在推荐人，去掉过期时间，重新登录
+			state.recommend_member_id = data;
 		}
 	},
 	actions: {
+		setRecommendMemberId({commit},data){
+			commit('_setRecommendMemberId',data);
+		},
+		setSalesUserId({commit},data){
+			commit('_setSalesUserId',data)
+		},
 		setMemberInfo({
 			commit
 		}, data) {

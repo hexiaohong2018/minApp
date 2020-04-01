@@ -13,7 +13,7 @@ import uniSearchBar from '../../../components/uni-search-bar/uni-search-bar.vue'
 import { ProductList } from '../../../utils/class.js';
 import { debounce } from '../../../utils/common.js';
 import {setActiveColor} from '../../../utils/util.js';
-import store from '../../../utils/store.js';
+import {mapGetters} from 'vuex';
 const productList = new ProductList();
 export default {
 	data() {
@@ -29,12 +29,17 @@ export default {
 	onLoad(options) {
 		this.category = options.id;
 		this.subCategory = options.sid;
-		this.activeColor = setActiveColor(store.getters.navColor,"#f44");
+		this.activeColor = setActiveColor(this.navColor,"#f44");
 		this.debounce = debounce(
 			function(value) {
 				this.searchStr = value;
 				this.mescroll.resetUpScroll();
 			},600,false);
+	},
+	computed:{
+		...mapGetters({
+			navColor:'custom/navColor'
+		})
 	},
 	methods: {
 		mescrollInit(mescroll) {

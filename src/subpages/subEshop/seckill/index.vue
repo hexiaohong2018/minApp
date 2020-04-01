@@ -1,8 +1,8 @@
 <template>
 	<view class="seckill-container">
-		<dc-tabs :active="active" :titles="['正在疯抢', '即将开启']" @change="onChange" :color="activeColor"></dc-tabs>
+		<dc-tabs :active="active" :titles="['正在疯抢', '即将开启']" @change="onChange" :color="navColor"></dc-tabs>
 		<mescroll-uni @init="mescrollInit" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback" top="52px">
-			<dc-product :products="products" mode="0" round type="sec" :text="active == 0 ? '马上抢' : '未开始'" border margin="10" :color="activeColor"
+			<dc-product :products="products" mode="0" round type="sec" :text="active == 0 ? '马上抢' : '未开始'" border margin="10" :color="navColor"
 			@click="onSecKill"
 			@submit="onSecKill"
 			
@@ -12,20 +12,19 @@
 </template>
 
 <script>
-import store from '../../../utils/store.js';
 import { CartList, Seckill } from '../../../utils/class.js';
-import { showToastFn } from '../../../utils/util.js';
+import { showToastFn, formatTime } from '../../../utils/util.js';
 const cart = new CartList();
 const seckill = new Seckill();
 
 import dcTabs from '../../../components/tabs/index.vue';
 import dcProduct from '../../../components/product/index.vue';
+import {mapGetters} from 'vuex';
 export default {
 	components: { dcTabs, dcProduct },
 	data() {
 		return {
 			active: 0,
-			activeColor: '',
 			products: [],
 			// loadState: 0,
 			//下拉刷新组件配置
@@ -49,8 +48,10 @@ export default {
 			}
 		};
 	},
-	onLoad() {
-		this.activeColor = store.getters.navColor;
+	computed:{
+		...mapGetters({
+			navColor:'custom/navColor'
+		})
 	},
 
 	methods: {

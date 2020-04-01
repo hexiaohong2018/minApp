@@ -82,7 +82,6 @@ import DcList from '@/components/list/index'
 import UniNumberBox from '@/components/uni-number-box/uni-number-box'
 import { getWeek, setActiveColor, showToastFn, mobileNumber, showModalFn } from '@/utils/util'
 import { mapGetters, mapMutations } from 'vuex'
-import store from '@/utils/store.js'
 import { BookService } from '@/utils/class'
 const bookService = new BookService()
 function dateFormat(fmt, date) {
@@ -112,11 +111,12 @@ export default {
   computed: {
     ...mapGetters({
       employee: 'reservation/employee',
-      order: 'reservation/order'
+      order: 'reservation/order',
+      navColor:"custom/navColor"
     })
   },
   created () {
-    this.activeColor = setActiveColor(store.getters.navColor, '#f44')
+    this.activeColor = setActiveColor(this.navColor, '#f44')
     this.dayNav = getWeek({
       days: 4
     })

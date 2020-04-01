@@ -1,18 +1,18 @@
 <template>
 	<div class="container">
-		<dc-nav-bar arrow clear-float :background="activeColor" @click-left="onLeft">
+		<dc-nav-bar arrow clear-float :background="navColor" @click-left="onLeft">
 			<template v-slot:title>
 				<view class="tab">
 					<view
 						class="tab-item"
-						:style="{ color: nav_index == 0 ? activeColor : inactiveColor, borderColor: inactiveColor, background: nav_index == 0 ? inactiveColor : '' }"
+						:style="{ color: nav_index == 0 ? navColor : innavColor, borderColor: innavColor, background: nav_index == 0 ? innavColor : '' }"
 						@click="navChange(0)"
 					>
 						线上订单
 					</view>
 					<view
 						class="tab-item"
-						:style="{ color: nav_index == 1 ? activeColor : inactiveColor, borderColor: inactiveColor, background: nav_index == 1 ? inactiveColor : '' }"
+						:style="{ color: nav_index == 1 ? navColor : innavColor, borderColor: innavColor, background: nav_index == 1 ? innavColor : '' }"
 						@click="navChange(1)"
 					>
 						线下订单
@@ -23,7 +23,7 @@
 		<view style="width: 100vw" v-show="nav_index == 0">
 			<dc-tabs
 				:active="active"
-				:color="activeColor"
+				:color="navColor"
 				v-if="nav_index == 0"
 				:titles="['全部', '待付款', '待发货', '待收货', '已完成']"
 				:style="{ width: '100vw', zIndex: 100 }"
@@ -113,9 +113,10 @@ import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 import dcList from '@/components/list/index.vue';
 import dcNavBar from '../../../components/navBar/index.vue';
 import dcTabs from '../../../components/tabs/index.vue';
-import store from '../../../utils/store.js';
+import {mapGetters} from 'vuex';
 import { setActiveColor, showToastFn, isDeepColor } from '../../../utils/util.js';
 import { Pay, Order } from '../../../utils/class.js';
+
 const pay = new Pay();
 const order = new Order();
 
@@ -124,7 +125,6 @@ export default {
 		return {
 			nav_index: 0,
 			active: 0,
-			activeColor: '',
 			offline_list: [],
 			online_list: [],
 			active_temp: 1,
@@ -136,15 +136,17 @@ export default {
 		_tabBarHeight() {
 			return this.tabBarHeight + (this.nav_index == 0 ? 52 : 0);
 		},
-		inactiveColor() {
-			return isDeepColor(this.activeColor) ? 'rgba(255,255,255,.8)' : 'rgba(0,0,0,.3)';
-		}
+		innavColor() {
+			return isDeepColor(this.navColor) ? 'rgba(255,255,255,.8)' : 'rgba(0,0,0,.3)';
+		},
+		...mapGetters({
+			navColor:setActiveColor('custom/navColor','#ffffff')
+		})
 	},
 	onLoad(options) {
 		var state = options.state;
 		this.active = state;
 		this.active_temp = state;
-		this.activeColor = setActiveColor(store.getters.navColor, '#ffffff');
 		this.tabBarHeight = this.$store.getters['systemInfo/systemInfo'].navHeight;
 	},
 	methods: {
@@ -233,7 +235,6 @@ export default {
 		upCallback(mescroll) {
 			this.onlineOrder(this.active_temp, mescroll.num)
 				.then(res => {
-					console.log(res);
 					this.active = this.active_temp;
 					mescroll.endSuccess(res.list.length, res.state == 2 ? false : true);
 				})

@@ -3,7 +3,7 @@
 		<block v-if="sv_invitation_info">
 			<view class="img" v-if="!showRule"><image :src="sv_invitation_info.campaign_img"></image></view>
 			<view class="des" id="des">给好友送福利，他得你也得</view>
-			<view class="name" :style="{ borderColor: activeColor, color: activeColor }">{{ sv_invitation_info.campaign_name }}</view>
+			<view class="name" :style="{ borderColor: navColor, color: navColor }">{{ sv_invitation_info.campaign_name }}</view>
 			<view class="gift">
 				<view class="item">
 					<text>您可获得</text>
@@ -16,7 +16,7 @@
 					<text>{{ userModuleConfigDetail[1].sv_user_givingtype == 1 ? '积分' : '元' }}</text>
 				</view>
 			</view>
-			<button class="share" :style="{ background: activeColor }" @click="onShare">分享给好友</button>
+			<button class="share" :style="{ background: navColor }" @click="onShare">分享给好友</button>
 			<view class="rule-head" @click="onClose">
 				活动规则
 				<view :class="{ 'rule-head-after-active': showRule, 'rule-head-after': !showRule }" @click.stop="onClose"></view>
@@ -27,15 +27,15 @@
 		</block>
 		<view v-else class="iconfont icon-wukong"></view>
 		<!-- 分享 -->
-		<dc-poster :share-info="shareInfo" :show="showPoseter" @close="ClosePoster"></dc-poster>
+		<dc-poster :share-info="shareInfo" :show="showPoseter" @close="ClosePoster" :color="navColor"></dc-poster>
 	</view>
 </template>
 
 <script>
 import { Share } from '../../../utils/class.js';
 import { setActiveColor, showToastFn } from '../../../utils/util.js';
-import store from '../../../utils/store.js';
 import dcPoster from '../../../components/poster/index.vue';
+import {mapGetters} from 'vuex';
 const share = new Share();
 export default {
 	data() {
@@ -45,13 +45,15 @@ export default {
 			userModuleConfigDetail: [], //奖励信息
 			shareInfo: {},
 			showPoseter: false,
-			activeColor: 'f44'
 		};
 	},
 	components: { dcPoster },
+	computed:{
+		...mapGetters({
+			navColor:setActiveColor('custom/navColor','#000')
+		})
+	},
 	onLoad(options) {
-		this.activeColor = setActiveColor(store.getters.navColor, '#000');
-		
 		share
 			.getConfigInfo()
 			.then(res => {

@@ -71,9 +71,9 @@ import uniSwipeActionItem from '../../../components/uni-swipe-action-item/uni-sw
 import dcSubmitBar from '../../../components/submit-bar/index.vue';
 import uniNumberBox from '@/components/uni-number-box/uni-number-box.vue';
 import productFeature from '../../../components/productFeature/index.vue';
-import store from '../../../utils/store.js';
 import { CartList, ProductList } from '../../../utils/class.js';
 import { showToastFn, setActiveColor, showModal } from '../../../utils/util.js';
+import {mapGetters} from 'vuex';
 const cart = new CartList();
 const productList = new ProductList();
 export default {
@@ -95,6 +95,12 @@ export default {
 			]
 		};
 	},
+	computed:{
+		...mapGetters({
+			shopInfo:'loginInfo/shopInfo',
+			navColor:'custom/navColor'
+		})
+	},
 	components: {
 		dcList,
 		uniSwipeAction,
@@ -103,8 +109,8 @@ export default {
 		uniNumberBox
 	},
 	onLoad() {
-		this.zeroInventorySales = this.$store.getters['loginInfo/shopInfo'].zeroInventorySales;
-		this.activeColor = setActiveColor(store.getters.navColor, '#f44');
+		this.zeroInventorySales = this.shopInfo.zeroInventorySales;
+		this.activeColor = setActiveColor(this.navColor, '#f44');
 		this.init();
 	},
 	onPullDownRefresh() {
@@ -215,7 +221,7 @@ export default {
 
 			let totalPrice = this.totalPrice || 0;
 			if (totalPrice > 0) {
-				if (!this.$store.getters['loginInfo/shopInfo'].enableDoBusinessSwitch) {
+				if (!this.shopInfo.enableDoBusinessSwitch) {
 					if (this.cartList.length > 0) {
 						uni.navigateTo({
 							url: '../pay/index'

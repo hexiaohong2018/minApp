@@ -41,6 +41,7 @@
 <script>
 import { BookService } from '../../../../utils/class'
 import { showToastFn } from '../../../../utils/util'
+import {mapGetters} from 'vuex'
 import DcAd from '../../../../components/ad'
 const bookService = new BookService()
 export default {
@@ -54,6 +55,11 @@ export default {
       productions: [],
       activeColor:"#f44"
     }
+  },
+  computed:{
+	  ...mapGetters({
+		  shopInfo:'loginInfo/shopInfo'
+	  })
   },
   methods: {
     addWechat(){
@@ -80,14 +86,13 @@ export default {
       }
     },
     gotoShop(){
-      var shopInfo = this.$store.getters['loginInfo/shopInfo'];
-      if(!shopInfo.sv_us_coordinate || !shopInfo.shop_address){
-        showToastFn(`商家配置位置信息有误：${!shopInfo.sv_us_coordinate?'店铺坐标为空':'店铺地址为空'}`);
+      if(!this.shopInfo.sv_us_coordinate || !this.shopInfo.shop_address){
+        showToastFn(`商家配置位置信息有误：${!this.shopInfo.sv_us_coordinate?'店铺坐标为空':'店铺地址为空'}`);
       }else{
         uni.openLocation({
           latitude: sv_us_coordinate.lat,
           longitude: sv_us_coordinate.lng,
-          name: shopInfo.shop_address
+          name: this.shopInfo.shop_address
         })
       }
     },

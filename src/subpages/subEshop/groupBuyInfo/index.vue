@@ -2,7 +2,7 @@
 	<view class="dispaly-container">
 		<dc-nav-bar arrow :background="navBarBackground" title="商品详情"></dc-nav-bar>
 		<button class="reg-btn" v-if="!memberInfo.member_id" open-type="getUserInfo" lang="zh_CN" @getuserinfo="onGetUserInfo"></button>
-		<dc-group-book-item :product="product" :is-display="false" @share="onShare" :color="activeColor"></dc-group-book-item>
+		<dc-group-book-item :product="product" :is-display="false" @share="onShare" :color="navColor"></dc-group-book-item>
 		<view class="buying">
 			<view class="title">{{ product.dataList.length }}人正在拼单，可以直接参与</view>
 			<ul>
@@ -16,7 +16,7 @@
 					<view class="des">还差{{ item.remain_assemble_num }}人拼成</view>
 					<view
 						class="go-group"
-						:style="'background:' + activeColor"
+						:style="'background:' + navColor"
 						@tap="
 							onGroup(1, {
 								assembleid: item.sv_assemble_id,
@@ -77,14 +77,14 @@
 		<product-feature
 			:productId="productId"
 			z-index="1000"
-			:color="activeColor"
+			:color="navColor"
 			:configId="configId"
 			:buyState="buyState"
 			@comfirm="onComfrim"
 			@close="closeFeature"
 		></product-feature>
 		<!-- 分享 -->
-		<dc-poster @close="onClose" :share-info="shareInfo" :show="showPoseter" z-index="1000" :color="activeColor"></dc-poster>
+		<dc-poster @close="onClose" :share-info="shareInfo" :show="showPoseter" z-index="1000" :color="navColor"></dc-poster>
 	</view>
 
 </template>
@@ -92,7 +92,7 @@
 <script>
 import { GroupBuy, CartList, User } from '../../../utils/class.js';
 
-import { decodeWXCodeParams, setActiveColor, showToastFn} from '../../../utils/util.js';
+import { decodeWXCodeParams, showToastFn} from '../../../utils/util.js';
 import dcGroupBookItem from '../../../components/group-book-item/index.vue';
 import dcPoster from '../../../components/poster/index.vue';
 import productFeature from '../../../components/productFeature/index.vue';
@@ -100,8 +100,8 @@ import dcGoodsAction from '../../../components/goodsAction/index.vue';
 import dcGoodsActionIcon from '../../../components/goodsActionIcon/index.vue';
 import dcGoodsActionBtn from '../../../components/goodsActionButton/index.vue';
 import dcNavBar from '../../../components/navBar/index.vue';
-import store from '../../../utils/store.js';
-import { debounce } from '../../../utils/common.js'
+import { debounce } from '../../../utils/common.js';
+import {mapGetters} from 'vuex';
 
 const groupBuy = new GroupBuy();
 const cart = new CartList();
@@ -113,8 +113,7 @@ export default {
 			productId: '',
 			configId: '',
 			buyState: 0,
-			memberInfo: {}, //会员信息
-			activeColor: '',
+			navColor: '',
 			product: {},
 			isEnd: false,
 			showPoseter: false,
@@ -133,19 +132,24 @@ export default {
 		dcGoodsActionBtn,
 		dcGoodsActionIcon
 	},
-	props: {},
+	computed:{
+		...mapGetters({
+			systemInfo:'systemInfo/systemInfo',
+			memberInfo:'loginInfo/memberInfo',
+			navColor:'custom/navColor'
+		})
+	},
 
 	/**
 	 * 生命周期函数--监听页面加载
 	 */
 	onLoad: function(options) {
 		var params = decodeWXCodeParams(options);
-		this.activeColor = store.getters.navColor;
-		this.menuHeight = this.$store.getters['systemInfo/systemInfo'].navHeight;
+		this.menuHeight = this.systemInfo.navHeight;
 		
 		this.debounce = debounce((e)=>{
 			if (e.scrollTop > this.menuHeight) {
-				this.navBarBackground = this.activeColor;
+				this.navBarBackground = this.navColor;
 			} else {
 				this.navBarBackground = 'transparent';
 			}
@@ -154,16 +158,11 @@ export default {
 		//如果是从分享页面过来的则登录获取用户信息
 		if (params.s) {
 			user.login().then(res => {
-				let loginInfo = res;
-				this.memberInfo = loginInfo.memberInfo;
 				this.getGroupBuyListItemFun(params.cid, params.id);
 			});
 		} else {
 			this.getGroupBuyListItemFun(params.cid, params.id);
 		}
-	},
-	onShow: function() {
-		this.memberInfo = this.$store.getters['loginInfo/memberInfo'];
 	},
 	onShareAppMessage: function(res) {
 		return this.shareInfo;

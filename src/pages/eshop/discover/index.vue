@@ -29,8 +29,6 @@ import { ProductList, CartList } from '../../../utils/class.js';
 import { showToastFn } from '../../../utils/util.js';
 import { debounce } from '../../../utils/common.js';
 import { mapGetters } from 'vuex'
-
-import store from '../../../utils/store.js';
 const productList = new ProductList();
 const cart = new CartList();
 export default {
@@ -41,7 +39,8 @@ export default {
 			default: 2
 		},
 		show: Boolean,
-		color: String
+		color: String,
+		refresh:Boolean,
 	},
 	data() {
 		return {
@@ -121,10 +120,13 @@ export default {
 		show(newVal) {
 			if (newVal) {
 				this.onLoad();
-				// cart.getCartList().then(res => {
-					
-				// 	this.num = res.product_num;
-				// });
+			}
+		},
+		refresh(newVal){
+			if(newVal){
+				this.init().then(res=>{
+					this.mescroll.resetUpScroll();
+				})
 			}
 		}
 	},
@@ -133,13 +135,10 @@ export default {
 			this.mescroll = mescroll;
 		},
 		downCallback(mescroll) {
-			uni.removeStorageSync('expiredTime');
-			this.$parent.getUiConfig().then(res=>{
-				console.log(res);
-			})
+			this.$store.dispatch('loginInfo/setExpiredTime',null);
+			this.$parent.getUiConfig();
 			cart.getCartList().then(res => {
 				this.$store.dispatch('cartList/setNum',res.product_num);
-				// this.num = res.product_num;
 			});
 			this.init()
 				.then(res => {

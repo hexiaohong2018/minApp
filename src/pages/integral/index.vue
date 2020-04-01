@@ -82,7 +82,8 @@ export default {
 	},
 	components: { uniGrid, uniGridItem, dcProduct, dcList, uniLoadMore, dcField },
 	onPullDownRefresh() {
-		uni.removeStorageSync('expiredTime');
+		// uni.removeStorageSync('expiredTime');
+		this.$store.dispatch('loginInfo/setExpiredTime',null);
 		this._login().then(res => {
 			showToastFn('刷新成功');
 			uni.stopPullDownRefresh();

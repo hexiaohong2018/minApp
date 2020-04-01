@@ -21,14 +21,13 @@
 import dcNavBar from '../../../components/navBar/index.vue';
 import dcTabs from '../../../components/tabs/index.vue';
 import integralCommissionItem from '../../../components/template/integral-commission-item/index.vue';
-import store from '../../../utils/store.js';
 import { Bill } from '../../../utils/class.js';
 import { showToastFn, isDeepColor } from '../../../utils/util.js';
+import {mapGetters} from 'vuex';
 const bill = new Bill();
 export default {
 	data() {
 		return {
-			navColor: '',
 			activeIndex: 0,
 			total: 20,
 			tabBarHeight: 0,
@@ -58,11 +57,12 @@ export default {
 	computed: {
 		_color() {
 			return isDeepColor(this.navColor) ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)';
-			// return setActiveColor(this.navColor)
-		}
+		},
+		...mapGetters({
+			navColor:'custom/navColor'
+		})
 	},
 	onLoad() {
-		this.navColor = store.getters.navColor;
 		this.tabBarHeight = this.$store.getters['systemInfo/systemInfo'].navHeight + 172;
 	},
 	methods: {

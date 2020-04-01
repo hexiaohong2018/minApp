@@ -3,8 +3,7 @@
 import {
 	apiHost,
 	keyName,
-	imgUrl,
-	expiredTimeName
+	imgUrl
 } from "../config.js";
 //导入工具函数
 import {
@@ -756,15 +755,6 @@ class User {
 								sv_money_satisfy: result.sv_money_satisfy,
 								sv_move_freight: result.sv_move_freight
 							},
-							//店铺自定义装修信息(旧版本数据)
-							// wxapp_uiconfig: classifyModule(result.wxapp_uiconfig && JSON.parse(result.wxapp_uiconfig).map(
-							// 	item => {
-							// 		item.subModule = item.subModule && item.subModule.map(item => {
-							// 			item.img = item.img && imgUrl + item.img;
-							// 			return item;
-							// 		})
-							// 		return item;
-							// 	})),
 							WIFI: {
 								name: result.wiFiName,
 								pwd: result.wiFiPwd
@@ -814,6 +804,7 @@ class User {
 					memberCardInfo.sv_ml_name = values.sv_ml_name;
 					memberCardInfo.sv_mr_cardno = values.sv_mr_cardno;
 				}
+				
 				store.dispatch('loginInfo/setMemberCardInfo', memberCardInfo);
 				return memberCardInfo;
 			} else {
@@ -2577,7 +2568,7 @@ class BookService {
 					var result = {
 						list: res.values.list.map(item => {
 							item.product_price = item.sv_p_unitprice;
-							item.sv_p_images2 = item.sv_product_logo ? imgUrl + item.sv_product_logo : '/images/foodimg.png'
+							item.sv_p_images2 = item.sv_product_logo ? imgUrl + item.sv_product_logo : def_img
 							return item;
 						}),
 						isAll: _pageIndex++ * pageSize >= res.values.count ? true : false
@@ -2610,7 +2601,7 @@ class BookService {
 					var result = {
 						list: res.values.list.map(item => {
 							item.sv_technician_photo = item.sv_technician_photo ? imgUrl + item.sv_technician_photo :
-								'/images/user.png'
+								'/static/user.png'
 							return item;
 						}),
 						isAll: _pageIndex++ * pageSize >= res.values.count ? true : false
@@ -2644,7 +2635,7 @@ class BookService {
 					var result = {
 						list: res.values.list.map(item => {
 							item.product_price = item.sv_reservation_money;
-							item.sv_p_images2 = item.sv_product_logo ? imgUrl + item.sv_product_logo : '/images/foodimg.png'
+							item.sv_p_images2 = item.sv_product_logo ? imgUrl + item.sv_product_logo : def_img
 							return item;
 						}),
 						isAll: _pageIndex++ * pageSize >= res.values.count ? true : false
@@ -2667,7 +2658,7 @@ class BookService {
 		}).then(res => {
 			if (res.succeed && res.values) {
 				return res.values.list.map(item => {
-					item.sv_technician_photo = item.sv_technician_photo ? imgUrl + item.sv_technician_photo : '/images/user.png';
+					item.sv_technician_photo = item.sv_technician_photo ? imgUrl + item.sv_technician_photo : '/static/user.png';
 					return item;
 				});
 			} else {
@@ -2696,7 +2687,7 @@ class BookService {
 					var result = {
 						list: res.values.list.map(item => {
 							item.product_price = item.sv_p_unitprice;
-							item.sv_p_images2 = item.sv_product_logo ? imgUrl + item.sv_product_logo : '/images/foodimg.png'
+							item.sv_p_images2 = item.sv_product_logo ? imgUrl + item.sv_product_logo : def_img
 							return item;
 						}),
 						isAll: _pageIndex++ * pageSize >= res.values.count ? true : false
@@ -2723,7 +2714,7 @@ class BookService {
 
 				var values = res.values;
 
-				values.sv_p_images2 = values.sv_product_logo ? imgUrl + values.sv_product_logo : "/images/foodimg.png";
+				values.sv_p_images2 = values.sv_product_logo ? imgUrl + values.sv_product_logo : def_img;
 				values.sv_p_imagesList = [{
 					img: values.sv_p_images2
 				}];
@@ -2841,7 +2832,7 @@ class BookService {
 			var values = res.values,
 				model = values && values.model;
 			if (res.succeed && values && model) {
-				model.sv_p_images2 = model.sv_product_logo ? imgUrl + model.sv_product_logo : '/images/foodimg.png'
+				model.sv_p_images2 = model.sv_product_logo ? imgUrl + model.sv_product_logo : def_img
 				return model;
 			} else {
 				return Promise.reject(res)
@@ -2875,13 +2866,13 @@ class BookService {
 			if (res.succeed && res.values) {
 				var values = res.values;
 				values.sv_technician_photo = values.sv_technician_photo ? imgUrl + values.sv_technician_photo :
-					'/images/user.png';
+					'/static/user.png';
 
 				values.sv_technician_works = (values.sv_technician_works || []).map(item => {
 					return item.img.map(img => {
 						return {
 							des: item.des,
-							img: img ? imgUrl + img.img : '/images/foodimg.png'
+							img: img ? imgUrl + img.img : def_img
 						}
 					})
 				})

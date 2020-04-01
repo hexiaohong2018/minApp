@@ -54,16 +54,9 @@
 					</dc-list>
 				</li>
 			</ul>
-			<view class="discountinformation" v-if="sv_ml_commondiscount != 10">
-				<view>
-					优惠信息
-					<text style="font-size: 24rpx;">（会员）</text>
-				</view>
-				<view>
-					享受
-					<text class="colorbase1">{{ sv_ml_commondiscount }}</text>
-					折
-				</view>
+			<view class="discountinformation" v-if=" buystate==0 && memberCardInfo.sv_ml_commondiscount != 10">
+				<view>优惠信息<text style="font-size: 24rpx;">（会员）</text></view>
+				<view>享受<text class="colorbase1">{{ memberCardInfo.sv_ml_commondiscount }}</text>折</view>
 			</view>
 			<view v-if="delivery == 1" class="fr colorbase1">{{ freightInfo }}</view>
 			<view v-if="buystate == 0" class="coupon">
@@ -140,7 +133,6 @@ import uniPopup from '../../../components/uni-popup/uni-popup.vue';
 import dcTemplateCoupon from '../../../components/template/coupon/index.vue';
 import dcSubmitBar from '../../../components/submit-bar/index.vue';
 import { mapGetters } from 'vuex';
-import store from '../../../utils/store.js';
 
 import { showToastFn, formatTime, isDeepColor, setActiveColor, showModalFn } from '../../../utils/util.js';
 import { CartList, Address, Coupon, User, Pay, netRequest, GroupBuy } from '../../../utils/class.js';
@@ -157,21 +149,18 @@ export default {
 		return {
 			coupons: [],
 			selectCouponIndex: -1,
-			navColor: '',
 			cartInfo: null,
 			totalPrice: 0, //计算后的总结，不含运费
 			addr: '填写收货地址', //收货地址
 			consignee: '', //收货人
-			delivery: 0, //用户选择配送方式,0自提，1配送，2两者都支持
+			delivery:1,
 			remark: '',
 			deliveryAddr: '', //收货地址
 			deliveryPerson: '', //收货人
 			deliveryPhone: '', //收货人电话
 			sv_receipt_id: '0', //地址ID
 			pay_modle: 1, //用户选择的支付方式
-			shopInfo: {}, //店铺相关信息
 			kilometer: 10000, //当前地址与店铺的距离
-			sv_ml_commondiscount: 10, //会员折
 			pack_cost: 0, //打包费
 
 			sendTime: '选定时间', //发货/提货时间
@@ -186,7 +175,9 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			memberCardInfo: 'loginInfo/memberCardInfo'
+			memberCardInfo: 'loginInfo/memberCardInfo',
+			shopInfo:'loginInfo/shopInfo',
+			navColor:'custom/navColor'
 		}),
 		inactiveColor() {
 			return isDeepColor(this.navColor) ? 'rgba(255,255,255,.8)' : 'rgba(0,0,0,.3)';
@@ -201,13 +192,14 @@ export default {
 			return this.delivery == 0 ? this.shopInfo.shopPay : this.shopInfo.takeOutFoodPay;
 		},
 		totalPriceWidthDeliver() {
-			var shopInfo = this.shopInfo || this.$store.getters['loginInfo/shopInfo'],
-				freight = shopInfo.freight || {},
+				var freight = this.shopInfo.freight || {},
 				cartTotalPrice = this.totalPrice || 0;
-			return this.delivery == 0 ? cartTotalPrice : cartTotalPrice >= freight.sv_money_satisfy ? cartTotalPrice : cartTotalPrice + freight.sv_move_freight;
+			return this.delivery == 0 ? cartTotalPrice 
+			: cartTotalPrice >= freight.sv_money_satisfy ? cartTotalPrice 
+			:cartTotalPrice + freight.sv_move_freight;
 		},
 		freightInfo() {
-			var freight = this.shopInfo.freight || this.$store.getters['loginInfo/shopInfo'].freight;
+			var freight = this.shopInfo.freight;
 			return `${freight.sv_delivery_rise > 0 ? '满' + freight.sv_delivery_rise + '元起送' : ''}
 			${freight.sv_move_freight > 0 ? ' 运费' + freight.sv_move_freight + '元' : ''}
 			${freight.sv_money_satisfy > 0 ? ' 满' + freight.sv_money_satisfy + '元免运费' : ''}`;
@@ -240,26 +232,20 @@ export default {
 		}
 	},
 	onLoad() {
-		this.navColor = store.getters.navColor;
-		this.shopInfo = this.$store.getters['loginInfo/shopInfo'];
-
-		var activityInfo = uni.getStorageSync('activityInfo'); //拼团，秒杀活动信息
-		this.activityInfo = activityInfo;
-		this.configDeliverMode = activityInfo.deliver || 2;
-		this.delivery = this.configDeliverMode == 2 ? 1 : this.configDeliverMode;
-		this.buystate = activityInfo.buystate ? activityInfo.buystate : 0; //如果是活动，不显示优惠券
+		this.activityInfo = uni.getStorageSync('activityInfo'); //拼团，秒杀活动信息;
+		this.configDeliverMode = this.activityInfo.deliver || 2;
+		//用户选择配送方式,0自提，1配送，2两者都支持
+		this.delivery =  this.configDeliverMode == 2 ? 1 : this.configDeliverMode;
+		this.buystate = this.activityInfo.buystate ? this.activityInfo.buystate : 0; //如果是活动，不显示优惠券
 		uni.removeStorage({ key: 'activityInfo' });
-
-		// _getCartlist(activityInfo) {
-		//   //是否有团购页面跳转过来,如果是则获取团购列表，否则为一般购物获取商品列表
-		//   return activityInfo.productid ? groupBuy.getShoppingCartList(activityInfo.productid, activityInfo.product_num, activityInfo.assembleconfigid, activityInfo.buystate) : cart.getCartList("", 0)
-		// },
-
+		
+		//activityInfo.productid是否拼团
 		Promise.all([
-			activityInfo.productid
-				? groupBuy.getShoppingCartList(activityInfo.productid, activityInfo.product_num, activityInfo.assembleconfigid, activityInfo.buystate)
-				: cart.getCartList('', 0),
-			coupon.getCouponList(0)
+			this.activityInfo.productid
+				? groupBuy.getShoppingCartList(this.activityInfo.productid, this.activityInfo.product_num, this.activityInfo.assembleconfigid, this.activityInfo.buystate)
+				: cart.getCartList('',this.delivery),
+			coupon.getCouponList(0),
+			user.getMemberCardInfo()
 		]).then(values => {
 			this.cartInfo = values[0];
 			this.totalPrice = this.cartInfo.total_price;
@@ -271,8 +257,7 @@ export default {
 		});
 	},
 	onShow() {
-		this.sv_ml_commondiscount = this.buystate != '0' ? 10 : this.memberCardInfo.sv_ml_commondiscount || 10; //如果是活动不显示会员折扣
-		this.pay_modle = this.memberCardInfo.sv_mw_availableamount > 0 ? 2 : 1; //余额足够则余额支付，否则微信
+		// this.pay_modle = this.memberCardInfo.sv_mw_availableamount > 0 ? 2 : 1; //余额足够则余额支付，否则微信
 
 		//获取地址信息
 		address.getAddressList({ def: true }).then(addr => {
@@ -284,7 +269,7 @@ export default {
 				this._setDelivery(this.delivery || '0');
 				//计算店铺与所选地址的距离
 				var sv_receipt_mlanlat = addr && addr.sv_receipt_mlanlat && JSON.parse(addr.sv_receipt_mlanlat),
-					shopInfo = this.shopInfo || this.$store.getters['loginInfo/shopInfo'],
+					shopInfo = this.shopInfo || this.shopInfo,
 					sv_us_coordinate = shopInfo.sv_us_coordinate; //店铺坐标
 				//启用定位功能
 				if (!shopInfo.dis_lbs && sv_us_coordinate && sv_receipt_mlanlat) {
@@ -420,6 +405,7 @@ export default {
 		cancelCoupon() {
 			this.$refs.popup.close();
 			this._prePayOrder().then(res => {
+				
 				this.totalPrice = res.sv_order_actual_money;
 				this.selectCouponIndex > -1 && (this.coupons[this.selectCouponIndex].checked = false);
 				this.selectCouponIndex = -1; //选择的优惠券ID

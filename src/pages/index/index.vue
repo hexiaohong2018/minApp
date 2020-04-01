@@ -1,6 +1,5 @@
 <template></template>
 <script>
-import store from '../../utils/store.js';
 import { User } from '../../utils/class.js';
 import { phoneInfo, showModalFn } from '../../utils/util.js';
 import {mapGetters} from 'vuex';

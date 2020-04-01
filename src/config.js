@@ -8,12 +8,10 @@ const apiHost = 'http://119.23.132.106:97/api'; //服务器地址
 
 const keyName = "ACCESSTOKEN";
 const imgUrl = 'https://res.decerp.cc';
-const expiredTimeName = 'expiredTime';
 
 
 module.exports={
   apiHost,
   keyName,
-  imgUrl,
-  expiredTimeName
+  imgUrl
 }

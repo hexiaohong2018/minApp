@@ -1,6 +1,6 @@
 <template>
 	<view class="receive-container">
-		<dc-template-coupon v-for="item in couponList" :key="item.sv_coupon_id" :coupon="item" @click="getCoupon" :recived="true" :color="color"></dc-template-coupon>
+		<dc-template-coupon v-for="item in couponList" :key="item.sv_coupon_id" :coupon="item" @click="getCoupon" :recived="true" :color="navColor"></dc-template-coupon>
 	</view>
 </template>
 
@@ -8,21 +8,24 @@
 import dcTemplateCoupon from '../../../components/template/coupon/index.vue';
 import { Coupon } from '../../../utils/class.js';
 import { showToastFn} from '../../../utils/util.js';
-import store from '../../../utils/store.js';
+import {mapGetters} from 'vuex';
 const coupon = new Coupon();
 export default {
 	data() {
 		return {
 			couponList: [],
-			color:''
 		};
 	},
 	components: {
 		dcTemplateCoupon
 	},
 	onLoad() {
-		this.color = store.getters.navColor;
 		this.getMemberWxCouponRecordList();
+	},
+	computed:{
+		...mapGetters({
+			navColor:'custom/navColor'
+		})
 	},
 	methods: {
 		/**

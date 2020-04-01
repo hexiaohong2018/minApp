@@ -41,7 +41,6 @@
 import loading from '../uni-load-more/uni-load-more.vue';
 import { promiseAPI, showToastFn,setActiveColor} from '../../utils/util.js';
 import { netRequest } from '../../utils/class.js';
-// import store from '../../utils/store.js';
 
 import uniPopup from '@/components/uni-popup/uni-popup.vue';
 

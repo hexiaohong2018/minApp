@@ -44,7 +44,6 @@
 </template>
 <script>
 import { setActiveColor, showToastFn } from '@/utils/util'
-import store from '@/utils/store.js'
 import { mapGetters } from 'vuex'
 import { BookService } from '@/utils/class'
 const bookService = new BookService()
@@ -57,7 +56,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      service: 'reservation/service'
+      service: 'reservation/service',
+			navColor:'custom/navColor',
     })
   },
   methods: {
@@ -71,7 +71,7 @@ export default {
     }
   },
   created () {
-    this.activeColor = setActiveColor(store.getters.navColor, '#f44')
+    this.activeColor = setActiveColor(this.navColor, '#f44')
   }
 }
 </script>

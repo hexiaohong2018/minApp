@@ -42,8 +42,8 @@
 				></dc-goods-action-btn>
 			</template>
 		</dc-goods-action>
-		<poster :show="showPoster" @close="onClose" :share-info="shareInfo" z-index="1000" :color="activeColor"></poster>
-		<product-feature :productId="productId" @close="closeFeature" z-index="1000" :color="activeColor" @comfirm="onComfirm"></product-feature>
+		<poster :show="showPoster" @close="onClose" :share-info="shareInfo" z-index="1000" :color="navColor"></poster>
+		<product-feature :productId="productId" @close="closeFeature" z-index="1000" :color="navColor" @comfirm="onComfirm"></product-feature>
 	</div>
 </template>
 
@@ -55,7 +55,6 @@ import dcGoodsAction from '../../../components/goodsAction/index.vue';
 import dcGoodsActionIcon from '../../../components/goodsActionIcon/index.vue';
 import dcGoodsActionBtn from '../../../components/goodsActionButton/index.vue';
 import productFeature from '../../../components/productFeature/index.vue';
-import store from '../../../utils/store.js';
 import { debounce } from '../../../utils/common.js';
 
 import { mapGetters } from 'vuex';
@@ -75,7 +74,7 @@ export default {
 			loading: true,
 			icon: 'arrow-left',
 			menuHeight: 0,
-			activeColor: '',
+			// navColor: '',
 			productId: 0, //当前购买的商品ID
 			isbuyNow: false
 		};
@@ -84,12 +83,11 @@ export default {
 		return this.shareInfo;
 	},
 	onLoad(options) {
-		this.activeColor = store.getters.navColor;
-		this.menuHeight = this.$store.getters['systemInfo/systemInfo'].navHeight;
+		this.menuHeight = this.ststemInfo.navHeight;
 		this.debounce = debounce(
 			e => {
 				if (e.scrollTop > this.menuHeight) {
-					this.navBarBackground = this.activeColor;
+					this.navBarBackground = this.navColor;
 				} else {
 					this.navBarBackground = 'transparent';
 				}
@@ -123,7 +121,9 @@ export default {
 	computed: {
 		...mapGetters({
 			num: 'cartList/num',
-			shopInfo: 'loginInfo/shopInfo'
+			shopInfo: 'loginInfo/shopInfo',
+			navColor:'custom/navColor',
+			ststemInfo:'systemInfo/systemInfo'
 		})
 	},
 	methods: {

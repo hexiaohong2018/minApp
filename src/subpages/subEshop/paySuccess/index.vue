@@ -1,9 +1,9 @@
 <template>
 	<view>
 		<!-- pages/paySuccess/index.uniml -->
-		<dc-nav-bar title="订单详情" :left-icon="icon" :background="activeColor" clear-float @click-left="onClickLeft"></dc-nav-bar>
+		<dc-nav-bar title="订单详情" :left-icon="icon" :background="navColor" clear-float @click-left="onClickLeft"></dc-nav-bar>
 		<view class="order-container">
-			<view class="order-state" :style="{ background: activeColor }">
+			<view class="order-state" :style="{ background: navColor }">
 				<view class="order-info">
 					<view class="title">
 						<text v-if="orderInfo.shipping_methods">
@@ -43,7 +43,7 @@
 			</view>
 			<view class="consignee">
 				<view class="location">
-					<view class="iconfont-vant" :class="'icon-vant-' + (orderInfo.shipping_methods ? 'location-o' : 'shop-o')" :style="{ color: activeColor }"></view>
+					<view class="iconfont-vant" :class="'icon-vant-' + (orderInfo.shipping_methods ? 'location-o' : 'shop-o')" :style="{ color: navColor }"></view>
 				</view>
 				<template v-if="orderInfo.shipping_methods">
 					<view class="info">收货人：{{ orderInfo.receipt_data.s_r_name + ' ' + orderInfo.receipt_data.s_r_phone }}</view>
@@ -104,14 +104,14 @@
 		</view>
 
 		<view class="footer" v-if="!orderInfo.payment_status">
-			<view @tap="bindDelPay" class="del-oder" :style="'background:' + activeColor">取消订单</view>
-			<view @tap="bindPayImmediately" class="pay-oder" :style="'background:' + activeColor">付款</view>
+			<view @tap="bindDelPay" class="del-oder" :style="'background:' + navColor">取消订单</view>
+			<view @tap="bindPayImmediately" class="pay-oder" :style="'background:' + navColor">付款</view>
 		</view>
 		<view class="footer" v-if="orderInfo.payment_status && orderInfo.shipping_methods == 0">
-			<view @tap="toShop" class="to-shop" :style="'background:' + activeColor">导航到店</view>
+			<view @tap="toShop" class="to-shop" :style="'background:' + navColor">导航到店</view>
 		</view>
 
-		<dc-poster :show="showShare" :share-info="shareInfo" :color="activeColor" z-index="10000"></dc-poster>
+		<dc-poster :show="showShare" :share-info="shareInfo" :color="navColor" z-index="10000"></dc-poster>
 	</view>
 </template>
 
@@ -119,10 +119,10 @@
 import wxbarcode from 'wxbarcode';
 import { Pay, Order } from '../../../utils/class.js';
 import { showToastFn, setActiveColor, showModalFn } from '../../../utils/util.js';
-import store from '../../../utils/store.js';
 import dcPoster from '../../../components/poster/index.vue';
 import uniNumberBox from '../../../components/uni-number-box/uni-number-box.vue';
 import dcNavBar from '../../../components/navBar/index.vue';
+import {mapGetters} from 'vuex';
 
 const pay = new Pay();
 const order = new Order();
@@ -130,9 +130,8 @@ const order = new Order();
 export default {
 	data() {
 		return {
-			activeColor: '',
+			navColor: '',
 			orderInfo: {},
-			shopInfo: {},
 			//店铺信息
 			showShare: false,
 			shareInfo: {},
@@ -151,14 +150,17 @@ export default {
 		uniNumberBox,
 		dcNavBar
 	},
-
+	computed:{
+		...mapGetters({
+			shopInfo:'loginInfo/shopInfo',
+			navColor:setActiveColor('custom/navColor','#f44')
+		})
+	},
 	/**
 	 * 生命周期函数--监听页面加载
 	 */
 	onLoad: function(options) {
 		uni.hideShareMenu();
-		this.shopInfo = this.$store.getters['loginInfo/shopInfo'];
-		this.activeColor = setActiveColor(store.getters.navColor, '#f44');
 		if (options.buystate == 1) {
 			this.showShare = true;
 			//拼团则显示分享
@@ -328,7 +330,7 @@ export default {
 		},
 
 		oncall() {
-			const phoneNumber = this.$store.getters['loginInfo/shopInfo'].storePhoneNumber;
+			const phoneNumber = this.shopInfo.storePhoneNumber;
 			if (phoneNumber) {
 				uni.makePhoneCall({
 					phoneNumber
@@ -340,15 +342,13 @@ export default {
 
 		//导航到店铺
 		toShop() {
-		
-			var	shopInfo = this.$store.getters['loginInfo/shopInfo'],
-				coordinate = shopInfo && shopInfo.sv_us_coordinate;
+			var coordinate = this.shopInfo.sv_us_coordinate;
 			if (coordinate) {
 				uni.openLocation({
 					latitude: coordinate.lat,
 					longitude: coordinate.lng,
 					scale: 14,
-					name: shopInfo.shop_address
+					name: this.shopInfo.shop_address
 				});
 			} else {
 				showToastFn('商家没有配置店铺坐标');

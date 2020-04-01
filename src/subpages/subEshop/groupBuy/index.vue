@@ -1,6 +1,6 @@
 <template>
 	<view class="goupbook-content">
-		<dc-group-book :products="products" :color="activeColor"></dc-group-book>
+		<dc-group-book :products="products" :color="navColor"></dc-group-book>
 		<uni-load-more :status="loadState?'loading':'noMore'"></uni-load-more>
 	</view>
 </template>
@@ -10,19 +10,22 @@ import dcGroupBook from '../../../components/group-book/index.vue';
 import uniLoadMore from '../../../components/uni-load-more/uni-load-more.vue';
 import {GroupBuy} from '../../../utils/class.js';
 import {showToastFn} from '../../../utils/util.js';
-import store from '../../../utils/store.js'
+import {mapGetters} from 'vuex';
 const groupBuy = new GroupBuy();
 export default {
 	data() {
 		return {
 			products: [],
-			activeColor: '',
 			loadState: true
 		};
 	},
+	computed:{
+		...mapGetters({
+			navColor:'custom/navColor'
+		})
+	},
 	components: { dcGroupBook,uniLoadMore },
 	onLoad() {
-		this.activeColor = store.getters.navColor;
 		groupBuy
 			.getGroupBuyList()
 			.then(res => {

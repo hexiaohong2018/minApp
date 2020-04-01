@@ -42,9 +42,9 @@ export default {
 				params.form_id = this.formId;
 				user.weChatPhoneNumberReg(params)
 					.then(res => {
-						console.log(res);
 						//移除推荐人ID
-						uni.removeStorage({ key: 'recommend_member_id' });
+						this.$store.dispatch('loginInfo/setRecommendMemberId',0)
+		
 						showToastFn('注册成功', 'success');
 						setTimeout(() => {
 							uni.navigateBack({
@@ -65,7 +65,7 @@ export default {
 			user.bindMemberCard(this.phone, this.code, e.detail.formId)
 				.then(res => {
 					//移除推荐人ID
-					uni.removeStorage({ key: 'recommend_member_id' });
+					this.$store.dispatch('loginInfo/setRecommendMemberId',0);
 					showToastFn('注册成功', 'success');
 					setTimeout(() => {
 						uni.navigateBack({

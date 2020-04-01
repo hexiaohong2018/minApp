@@ -1,6 +1,6 @@
 <template>
 	<view class="bill-container">
-		<dc-tabs :titles="['消费记录', '充值记录', '佣金记录']" :active="active" @change="onChange" :color="activeColor"></dc-tabs>
+		<dc-tabs :titles="['消费记录', '充值记录', '佣金记录']" :active="active" @change="onChange" :color="navColor"></dc-tabs>
 		<mescroll-uni @init="mescrollInit" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback" top="52px">
 			<view class="content">
 				<integral-commission-item v-for="item,index in list" :item="item" :key="index"></integral-commission-item>
@@ -12,16 +12,15 @@
 <script>
 import dcTabs from '../../../components/tabs/index.vue';
 import integralCommissionItem from '../../../components/template/integral-commission-item/index.vue';
-import store from '../../../utils/store.js';
 import { showToastFn } from '../../../utils/util.js';
 import {Bill} from '../../../utils/class.js';
+import {mapGetters} from 'vuex';
 const bill = new Bill();
 export default {
 	data() {
 		return {
 			active: 0,
 			activeTemp:0,
-			activeColor: '',
 			list: [],
 			// loadStatus:true,
 			// 下拉刷新的常用配置
@@ -48,8 +47,10 @@ export default {
 		dcTabs,
 		integralCommissionItem
 	},
-	onLoad() {
-		this.activeColor = store.getters.navColor;
+	computed:{
+		...mapGetters({
+			navColor:'custom/navColor'
+		})
 	},
 	methods: {
 		_getListData(page) {

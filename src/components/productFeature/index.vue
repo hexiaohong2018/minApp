@@ -58,6 +58,7 @@ import { CartList, ProductList } from '../../utils/class.js';
 import { setActiveColor, showToastFn } from '../../utils/util.js';
 import uniNumberBox from '../uni-number-box/uni-number-box.vue';
 import uniPopup from '../uni-popup/uni-popup.vue';
+import {mapGetters} from 'vuex';
 const cart = new CartList();
 const productList = new ProductList();
 export default {
@@ -115,11 +116,14 @@ export default {
 			// console.log(this.productCustomdDetailList)
 			return this.productCustomdDetailList.find(item => item.sv_p_specs == this.spec_str) || null;
 		},
+		...mapGetters({
+			shopInfo:'loginInfo/shopInfo'
+		}),
 		max() {
       if (!this.currentProduct) return 0;
 			if (this.buyState == 0) {
 				//一般商品，若没开启零库存，则最大购买为库存，否则不限制
-				return this.$store.getters['loginInfo/shopInfo'].zeroInventorySales ? 1000 : this.currentProduct.sv_p_storage;
+				return this.shopInfo.zeroInventorySales ? 1000 : this.currentProduct.sv_p_storage;
 			} else {
 				//拼团，秒杀商品，若开启限购数量则最大购买为限购数量，否则不限制
 				

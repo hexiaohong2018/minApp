@@ -65,13 +65,13 @@ import dcList from '@/components/list/index.vue';
 
 import { showToastFn, formatTime } from '../../../utils/util.js';
 import { Integral, Address } from '../../../utils/class.js';
+import {mapGetters} from 'vuex';
 const integral = new Integral();
 const addr = new Address();
 export default {
 	components: { uniNumberBox, wPicker, dcList },
 	data() {
 		return {
-			memberInfo: null,
 			product: null, //积分兑换的商品
 			addr: '填写收货地址', //收货地址
 			consignee: '', //收货人
@@ -98,7 +98,6 @@ export default {
 		});
 	},
 	onShow() {
-		this.memberInfo = this.$store.getters['loginInfo/memberInfo'];
 		addr.getAddressList({ def: true }).then(res => {
 			this.deliveryPhone = res.sv_receipt_phone;
 			this.deliveryPerson = res.sv_receipt_name;
@@ -106,6 +105,12 @@ export default {
 			this.deliveryAddr = res.pcdAddress + res.instructions;
 			this._setDelivery(this.delivery || '0');
 		});
+	},
+	computed:{
+		...mapGetters({
+			memberInfo:'loginInfo/memberInfo',
+			shopInfo:'loginInfo/shopInfo'
+		})
 	},
 	methods: {
 		onReg(e) {
@@ -131,9 +136,8 @@ export default {
 		_setDelivery(delivery) {
 			if (delivery == 0) {
 				//自提
-				var shopInfo = this.$store.getters['loginInfo/shopInfo'];
-				this.consignee = `${shopInfo.shop_name}(${shopInfo.storePhoneNumber})`;
-				this.addr = shopInfo.shop_address;
+				this.consignee = `${this.shopInfo.shop_name}(${this.shopInfo.storePhoneNumber})`;
+				this.addr = this.shopInfo.shop_address;
 			} else {
 				//配送，或两者都支持
 				this.delivery = 1;
@@ -161,7 +165,7 @@ export default {
 			this._setDelivery(this.delivery);
 		},
 		onStepperChange(num) {
-			if (this.product.sv_p_integral * num > this.$store.getters['loginInfo/memberInfo'].sv_mw_availablepoint) {
+			if (this.product.sv_p_integral * num > this.memberInfo.sv_mw_availablepoint) {
 				showToastFn('积分不够');
 			} else {
 				this.num = num;

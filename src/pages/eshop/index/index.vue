@@ -3,7 +3,7 @@
 		<view v-if="shopInfo.shopList ? true : false" class="shops" :style="{ backgroundColor: color, color: _color }">
 			<view class="shops-content" @click="selectShop">
 				<view class="name ellipsis">
-					{{ shopInfo.shop_name }}
+					{{ shopInfo.shop_name || '首页' }}
 					<view class="name-after" :style="{ color: _color }"></view>
 				</view>
 				<view class="search" :style="{ color: _color }">
@@ -100,7 +100,8 @@ export default {
 	props: {
 		show: Boolean,
 		uiconfig: Object,
-		color: String
+		color: String,
+		refresh:Boolean,
 	},
 	data() {
 		return {
@@ -120,7 +121,6 @@ export default {
 		dcProduct,
 		dcCoupon,
 		dcGroupBook,
-		// dcPoster
 	},
 	created() {
 		// 在组件内模拟onLoad函数
@@ -128,11 +128,8 @@ export default {
 			var is_first_run = true;
 			return function() {
 				if (is_first_run) {
-					let shopInfo = this.$store.getters['loginInfo/shopInfo'],
-						shop_name = shopInfo.shop_name || '首页';
-					this.navHeight = this.$store.getters['systemInfo/systemInfo'].navHeight + (shopInfo.shopList ? 40 : 0);
-					this.tabBarHeight = this.$store.getters['systemInfo/systemInfo'].tabBarHeight;
-					this.init();
+					this.navHeight = this.systemInfo.navHeight + (this.shopInfo.shopList ? 40 : 0);
+					this.tabBarHeight = this.systemInfo.tabBarHeight;
 					is_first_run = false;
 				}
 			};
@@ -143,6 +140,11 @@ export default {
 			if (newVal) {
 				this.onLoad();
 			}
+		},
+		refresh(newVal){
+			if(newVal){
+				this.init();
+			}
 		}
 	},
 	methods: {
@@ -150,7 +152,7 @@ export default {
 		// 	this.showPoster = false;
 		// },
 		// createQr() {
-		// 	let shopInfo = this.$store.getters['loginInfo/shopInfo'],
+		// 	let shopInfo = this.shopInfo,
 		// 		uid = shopInfo && (shopInfo.sales_user_id || shopInfo.user_id),
 		// 		name = (shopInfo && shopInfo.shop_name) || '',
 		// 		sv_us_logo = shopInfo && shopInfo.sv_us_logo;
@@ -160,7 +162,7 @@ export default {
 		// 		path: '/pages/eshop/index?uid=' + uid
 		// 	};
 		// 	this.showPoseter = true;
-		// 	// console.log(this.shareInfo,this.showPoseter);
+		//  console.log(this.shareInfo,this.showPoseter);
 		// },
 
 		selectShop() {
@@ -189,7 +191,7 @@ export default {
 			}
 		},
 		downCallBack(mescroll) {
-			uni.removeStorageSync('expiredTime');
+			this.$store.dispatch('loginInfo/setExpiredTime',null);
 			this.$parent
 				.getUiConfig()
 				.then(res => {
@@ -238,7 +240,8 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			shopInfo: 'loginInfo/shopInfo'
+			shopInfo: 'loginInfo/shopInfo',
+			systemInfo:'systemInfo/systemInfo'
 		}),
 		_color() {
 			return isDeepColor(this.color) ? '#fff' : '#666';

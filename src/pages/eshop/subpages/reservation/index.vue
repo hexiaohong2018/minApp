@@ -32,7 +32,7 @@
 import { BookService } from '@/utils/class'
 import dcTabs from '@/components/tabs/index.vue'
 import { setActiveColor, showToastFn } from '@/utils/util'
-import store from '@/utils/store'
+import { mapGetters } from 'vuex'
 const bookService = new BookService()
 export default {
   navigate: ['navigateTo'],
@@ -70,6 +70,12 @@ export default {
 				}
 			}
     }
+  },
+  computed:{
+    ...mapGetters({
+			navColor:"custom/navColor",
+			systemInfo:'systemInfo/systemInfo'
+		}),
   },
   methods: {
     mescrollInit(mescroll) {
@@ -133,8 +139,8 @@ export default {
   },
 
   created () {
-    this.activeColor = setActiveColor(store.getters.navColor,"#f44")
-    this.navHeight = this.$store.getters['systemInfo/systemInfo'].navHeight - 22
+    this.activeColor = setActiveColor(this.navColor,"#f44")
+    this.navHeight = this.systemInfo.navHeight - 22
     this.getMyServices()
   }
 

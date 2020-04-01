@@ -5,7 +5,7 @@
 			:disabled="dis_lbs"
 			required
 			label="收货地址"
-			:placeholder="dis_lbs ? '请点击左边图标选择地址' : '请输入收货地址'"
+			:placeholder="dis_lbs ? '请点击右边图标选择地址' : '请输入收货地址'"
 			@change="changeAddr"
 		l>
 		<template v-slot:right-icon>
