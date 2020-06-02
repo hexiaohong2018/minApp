@@ -1,6 +1,8 @@
 <script>
 	export default {
 		onLaunch: function() {
+			this.$store.dispatch('test/test',567);
+			this.$store.dispatch('systemInfo/systemInfo');
 			console.log('App Launch')
 		},
 		onShow: function() {

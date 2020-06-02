@@ -1,6 +1,5 @@
 export default {
     namespaced: true,
-    cache: 'local',
     state: {
       testData: '123'
     },

@@ -1,10 +1,11 @@
 <template>
 	<view class="content">
+		{{test}}
 	</view>
 </template>
 
 <script>
-
+	import {mapGetters} from 'vuex'
 	export default {
 		data() {
 			return {
@@ -22,11 +23,18 @@
 			}
 		},
 		onLoad() {
-			console.log(this.$store)
+			console.log(this.systemInfo)
 		},
 		methods: {
 
 		},
+		computed:{
+			...mapGetters({
+				test:'test/testData',
+				systemInfo:'systemInfo/systemInfo'
+			})
+		}
+
 		
 	}
 </script>
