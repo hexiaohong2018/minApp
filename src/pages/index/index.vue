@@ -6,6 +6,7 @@
 
 <script>
 	import {mapGetters} from 'vuex'
+	import {getUrlParam} from '../../utils/util.js'
 	export default {
 		data() {
 			return {
@@ -24,6 +25,11 @@
 		},
 		onLoad() {
 			console.log(this.systemInfo)
+			console.log(new Date().Format("yyyy-MM-dd hh:mm:ss.S"))
+			console.log(getUrlParam('index/index?a=1',"a"))
+			console.log(getUrlParam('index/index?a=1',"b"))
+			console.log(getUrlParam('index/index',"b"))
+			
 		},
 		methods: {
 

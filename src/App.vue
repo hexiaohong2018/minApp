@@ -1,4 +1,5 @@
 <script>
+	import {} from 'utils/extend.js'
 	export default {
 		onLaunch: function() {
 			this.$store.dispatch('test/test',567);

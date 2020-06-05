@@ -86,18 +86,27 @@ const px2rpx = function (pxValue) {
   return pxValue * 750 / uni.getSystemInfoSync().windowWidth
 }
 
-function urlParams2Obj (urlParams) {
+const urlParams2Obj = (urlParams)=> {
   var obj = {}
   decodeURIComponent(urlParams).replace(/(\w+)=(\w+)/ig, (str, key, value) => {
     obj[key] = value
   })
   return obj
 }
-
-function obj2UrlParams (obj) {
+const obj2UrlParams = (obj)=> {
   return Object.keys(obj).map(key => `${key}=${obj[key]}`).join('&')
 }
-
+const getUrlParam = (url,key)=>{
+	if(!key){
+		throw new Error("key不能为空")
+	}
+	var [url,param] = url.split('?');
+	if(param){
+		return urlParams2Obj(param)[key]
+	}else{
+		return undefined
+	}
+}
 function debounce (fn, delay) {
   var _timer = null
   return function () {
@@ -146,6 +155,21 @@ const isDeepColor = (_color) => {
   }
   return !(total >= 192)
 }
+// 设置页码激活颜色
+const setActiveColor = function (activeColor, defColor) {
+  return isDeepColor(activeColor) ? activeColor : defColor
+}
+//设置微信顶部导航栏颜色
+const setNavBarColor = (color) => {
+  uni.setNavigationBarColor({
+    frontColor: isDeepColor(color) ? '#ffffff' : '#000000',
+    backgroundColor: color,
+    animation: {
+      duration: 300,
+      timingFunc: 'easeIn'
+    }
+  })
+}
 
 const type = (target) => {
   var ret = typeof (target)
@@ -178,6 +202,31 @@ const promiseAPI = (apiFun, obj = {}) => {
   })
 }
 
+/**
+ * 计算两段位置的距离
+ * //计算距离，参数分别为第一点的纬度，经度；第二点的纬度，经度
+ */
+const getDistance = (lat1, lng1, lat2, lng2) => {
+  var radLat1 = Rad(lat1)
+  var radLat2 = Rad(lat2)
+  var a = radLat1 - radLat2
+  var b = Rad(lng1) - Rad(lng2)
+  var s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(
+    b / 2), 2)))
+  s = s * 6378.137 // EARTH_RADIUS;
+  s = Math.round(s * 10000) / 10000 // 输出为公里
+  // s=s.toFixed(4);
+  return s
+}
+const Rad = (d) => {
+  return d * Math.PI / 180.0 // 经纬度转换成三角函数中度分表形式。
+}
+
+function keepDecimal (num) {
+  return Math.round(num * 100) / 100
+}
+
+
 export{
 	phoneInfo,//获取运行环境信息
 	verify,//正则验证
@@ -188,7 +237,12 @@ export{
 	urlParams2Obj,//url参数转对象 a=1&b=2 to {a:1,b:2}
 	hex2Rgb,//16进制色转rgb
 	isDeepColor,//颜色是否为深色
+	setActiveColor,//设置激活颜色
 	type,//判断类型
 	isNull,//判断空类型
 	promiseAPI,//微信小程序API函数转Promise
+	getDistance,//计算经纬度坐标距离
+	getUrlParam,//获取url参数值
+	setNavBarColor,//设置微信导航栏颜色
+	keepDecimal,//保留小数位
 }
