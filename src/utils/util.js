@@ -232,15 +232,24 @@ const Rad = (d) => {
 }
 
 function keepDecimal (num) {
-  return Math.round(num * 100) / 100
+	if(type(num)== "string"){
+		return Math.round(parseFloat(num) * 100) / 100
+	}else{
+		return Math.round(num * 100) / 100
+	}
 }
 
 
 export{
-	phoneInfo,//获取运行环境信息
-	verify,//正则验证
+	//微信小程序，uniApp可用
+	promiseAPI,//微信小程序API函数转Promise
 	rpx2px,//rpx转px
 	px2rpx,//px转rpx
+	phoneInfo,//获取运行环境信息
+	setNavBarColor,//设置微信导航栏颜色
+	
+	//通用
+	verify,//正则验证
 	debounce,//防抖函数
 	obj2UrlParams,//object对象转url参数{a:1,b:2} to a=1&b=2
 	urlParams2Obj,//url参数转对象 a=1&b=2 to {a:1,b:2}
@@ -249,9 +258,7 @@ export{
 	setActiveColor,//设置激活颜色
 	type,//判断类型
 	isNull,//判断空类型
-	promiseAPI,//微信小程序API函数转Promise
 	getDistance,//计算经纬度坐标距离
 	getUrlParam,//获取url参数值
-	setNavBarColor,//设置微信导航栏颜色
 	keepDecimal,//保留小数位
 }
