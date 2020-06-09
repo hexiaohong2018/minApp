@@ -1,31 +1,40 @@
 // 正则验证
+/**
+ * type:选择验证的类别 email,tel,idCard,name,也可以存入正则规则
+ * value:需要验证的数据
+ */
 const verify = (function () {
-  function email (email) {
+  function email (value) {
     const reg = /^\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}$/
-    return reg.test(email)
+    return reg.test(value)
   };
 
-  function tel (tel) {
+  function tel (value) {
     const reg = /^(\+86)?(13|14|15|17|18|19)[0-9]{9}$/
-    return reg.test(tel)
+	const reg1 = /[0-9-()（）]{7,18}/
+    return reg.test(value) || reg1.test(value)
   };
 
-  function idCard (idCard) {
+  function idCard (value) {
     const reg = /\d{17}[\d|x]|\d{15}$/
-    return reg.test(idCard)
+    return reg.test(value)
   };
-
-  function regName (name) {
-    const reg = /[\w\-\u4e00-\u9fa5]$/
-    return reg.test(name)
-  }
+  function name (value) {
+	// [\u4e00-\u9fa5]中文
+    const reg = /[A-Za-z0-9_\-\u4e00-\u9fa5]+/
+    return reg.test(value)
+  };
+  function url(value){
+	  const reg = /^((https|http|ftp|rtsp|mms)?:\/\/)[^\s]+/
+	  return reg.test(value)
+  };
   const fns = {
     email,
     tel,
     idCard,
-    regName
+    name,
+	url
   }
-  // type 包括邮件地址,手机号码,身份证号码,注册名称
   return function (type, value) {
     if (typeof fns[type] === 'function') {
       return fns[type](value)

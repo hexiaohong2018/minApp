@@ -6,7 +6,7 @@
 
 <script>
 	import {mapGetters} from 'vuex'
-	import {getUrlParam} from '../../utils/util.js'
+	import {getUrlParam,verify} from '../../utils/util.js'
 	export default {
 		data() {
 			return {
@@ -29,7 +29,8 @@
 			console.log(getUrlParam('index/index?a=1',"a"))
 			console.log(getUrlParam('index/index?a=1',"b"))
 			console.log(getUrlParam('index/index',"b"))
-			
+			console.log(verify('tel',18027463020))
+			console.log(verify('name','小宏*'))
 		},
 		methods: {
 
